@@ -104,21 +104,21 @@
         }
         return parseFloat(str) || 0;
     }
-
-    // Convertir fecha DD/MM/YYYY de Excel a YYYY-MM-DD
+    // Convertir fecha DD/MM/YYYY de Excel a YYYY-MM-DD de forma segura
     function formatearFechaParaInput(fechaStr) {
         if(!fechaStr) return '';
         let f = fechaStr.split(' ')[0]; // Quitar la hora si la tiene
         let partes = f.split('/');
         if(partes.length === 3) {
+            // Si el año está al final (DD/MM/YYYY)
             let dia = partes[0].padStart(2, '0');
             let mes = partes[1].padStart(2, '0');
             let anio = partes[2];
             return `${anio}-${mes}-${dia}`;
-        }
-        return f; // Si ya viene en formato YYYY-MM-DD, lo devuelve tal cual
+        } 
+        // Si ya viene en formato YYYY-MM-DD, lo devuelve tal cual
+        return f; 
     }
-
     // 1. Cargar CSV
     async function cargarDatos() {
         try {
@@ -186,7 +186,7 @@
             document.getElementById('dashboard-section').classList.remove('hidden');
             document.getElementById('agent-name').innerText = "Hola, " + agenteTotal['NOMBRE COMPLETO'];
             
-            // Inicializar fechas del filtro
+         // Inicializar fechas del filtro
             const fechas = datosBase
                 .filter(r => r['Email_Key'] && r['Email_Key'].toLowerCase() === email)
                 .map(r => formatearFechaParaInput(r['DATE']))
