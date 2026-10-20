@@ -13,19 +13,14 @@
         button { background-color: #d81b60; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; }
         button:hover { background-color: #ad1457; }
         .hidden { display: none; }
-        
-        /* Tablas */
         table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
         th { background-color: #f8bbd0; color: #333; }
         tr:nth-child(even) { background-color: #f9f9f9; }
-        
-        /* Tarjetas de Totales */
         .cards-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; margin-bottom: 30px; }
         .card { background: #fff; border-left: 5px solid #d81b60; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 200px; text-align: center; }
         .card h3 { margin: 0; font-size: 14px; color: #777; text-align: center; }
         .card p { margin: 10px 0 0; font-size: 24px; font-weight: bold; color: #333; }
-        
         #error-msg { color: red; text-align: center; margin-top: 10px; font-weight: bold; }
         .filter-box { background: #f0f0f0; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: center; }
     </style>
@@ -35,7 +30,6 @@
 <div class="container">
     <h1>Portal de Agentes</h1>
     
-    <!-- Formulario de Login -->
     <div id="login-section" class="login-box">
         <p>Ingresa tu correo corporativo para ver tus métricas:</p>
         <input type="email" id="email-input" placeholder="ejemplo@mediamarkt.es">
@@ -44,12 +38,10 @@
         <div id="error-msg"></div>
     </div>
 
-    <!-- Dashboard (Oculto inicialmente) -->
     <div id="dashboard-section" class="hidden">
         <h2 id="agent-name">Bienvenido</h2>
         <div style="text-align: center;"><button onclick="logout()" style="background: #666;">Cerrar Sesión</button></div>
         
-        <!-- Filtro de Fechas -->
         <div class="filter-box">
             <label><strong>Filtrar por fechas:</strong></label><br>
             <label>Desde: <input type="date" id="fecha-inicio"></label>
@@ -58,13 +50,9 @@
             <button onclick="resetFiltro()" style="background: #999; margin-left: 5px;">Ver Todo el Mes</button>
         </div>
 
-        <!-- Resumen Total (Dinámico según filtro) -->
         <h3>Resumen del Período</h3>
-        <div class="cards-container" id="totales-cards">
-            <!-- Se llena con JS -->
-        </div>
+        <div class="cards-container" id="totales-cards"></div>
 
-        <!-- Tabla Diaria -->
         <h3>Detalle Diario</h3>
         <div style="overflow-x: auto;">
             <table id="tabla-diaria">
@@ -78,9 +66,7 @@
                         <th>% Ratio</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <!-- Se llena con JS -->
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
@@ -90,9 +76,21 @@
     let datosTotales = [];
     let datosBase = [];
     let agenteLogueado = "";
-    let datosAgenteFiltrados = []; // Datos base filtrados por fecha
+    let datosAgenteFiltrados = [];
 
-    // 1. Cargar CSV
+    // Función auxiliar para convertir texto de Excel a número JS
+    // Ejemplo: "1.234,56" o "258,31" o "88,29%" -> Number
+    function parseNumeroExcel(val) {
+        if (!val) return 0;
+        let str = String(val).trim();
+        if (str.includes('%')) return parseFloat(str.replace('%', '').replace(',', '.')) / 100; // Porcentajes
+        // Si tiene coma decimal (formato español), la cambiamos por punto
+        if (str.includes(',')) {
+            str = str.replace(/\./g, '').replace(',', '.'); 
+        }
+        return parseFloat(str) || 0;
+    }
+
     async function cargarDatos() {
         try {
             const resTotales = await fetch('totales.csv');
@@ -103,24 +101,42 @@
             const textBase = await resBase.text();
             datosBase = parseCSV(textBase);
             
-            console.log("Datos cargados");
+            console.log("Datos cargados correctamente. Filas totales:", datosTotales.length);
         } catch (error) {
             console.error("Error cargando CSV", error);
-            document.getElementById('error-msg').innerText = "Error al cargar datos. Recarga la página.";
+            document.getElementById('error-msg').innerText = "Error al cargar datos. Verifica que los archivos estén subidos.";
         }
     }
 
-    // Parser CSV
     function parseCSV(text) {
-        const lines = text.split('\n').filter(line => line.trim() !== '');
-        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+        // Limpiamos posibles retornos de carro de Windows
+        const lines = text.replace(/\r/g, '').split('\n').filter(line => line.trim() !== '');
+        
+        // Detectamos el separador. Como tu Excel usa ';', lo forzamos.
+        const separator = lines[0].includes(';') ? ';' : ','; 
+        
+        const headers = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
         const result = [];
+        
         for(let i = 1; i < lines.length; i++) {
-            const currentline = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-            if(!currentline) continue;
+            let currentline = [];
+            let inQuotes = false;
+            let currentWord = "";
+            
+            for (let char of lines[i]) {
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === separator && !inQuotes) {
+                    currentline.push(currentWord);
+                    currentWord = "";
+                } else {
+                    currentWord += char;
+                }
+            }
+            currentline.push(currentWord); 
+
             const obj = {};
             headers.forEach((header, index) => {
-                let val = currentline[index] ? currentline[index].replace(/^"|"$/g, '').trim() : "";
+                let val = currentline[index] ? currentline[index].trim().replace(/^"|"$/g, '') : "";
                 obj[header] = val;
             });
             result.push(obj);
@@ -128,7 +144,6 @@
         return result;
     }
 
-    // Login
     function login() {
         const email = document.getElementById('email-input').value.trim().toLowerCase();
         if(!email) return;
@@ -141,7 +156,7 @@
             document.getElementById('dashboard-section').classList.remove('hidden');
             document.getElementById('agent-name').innerText = "Hola, " + agenteTotal['NOMBRE COMPLETO'];
             
-            // Inicializar fechas (min y max del agente)
+            // Inicializar fechas
             const fechas = datosBase
                 .filter(r => r['Email_Key'] && r['Email_Key'].toLowerCase() === email)
                 .map(r => r['DATE'] ? r['DATE'].split(' ')[0] : '')
@@ -153,9 +168,9 @@
                 document.getElementById('fecha-fin').value = fechas[fechas.length - 1];
             }
 
-            aplicarFiltro(); // Carga inicial con todo el mes
+            aplicarFiltro(); 
         } else {
-            document.getElementById('error-msg').innerText = "Correo no encontrado.";
+            document.getElementById('error-msg').innerText = "Correo no encontrado. Intenta de nuevo.";
         }
     }
 
@@ -166,52 +181,44 @@
         document.getElementById('dashboard-section').classList.add('hidden');
     }
 
-    // Filtrar por fechas y recalcular totales
     function aplicarFiltro() {
         const inicio = document.getElementById('fecha-inicio').value;
         const fin = document.getElementById('fecha-fin').value;
         
         if(!inicio || !fin) return;
 
-        // 1. Filtrar las filas diarias del agente
         datosAgenteFiltrados = datosBase.filter(row => {
             if(!row['Email_Key'] || row['Email_Key'].toLowerCase() !== agenteLogueado) return false;
             const fechaRow = row['DATE'] ? row['DATE'].split(' ')[0] : '';
             return fechaRow >= inicio && fechaRow <= fin;
         });
 
-        // 2. Recalcular totales con los datos filtrados (Lógica ponderada)
-        let sumHandled = 0;
-        let sumCalcAHT = 0;
-        let sumFCRReplies = 0;
-        let sumFCRPos = 0;
-        let sumCSATReplies = 0;
-        let sumCSATPos = 0;
-        let sumHandledNoTrans = 0;
-        let sumCBTNoTrans = 0;
+        // Recálculo ponderado para el período filtrado
+        let sumHandled = 0, sumCalcAHT = 0;
+        let sumFCRReplies = 0, sumFCRPos = 0;
+        let sumCSATReplies = 0, sumCSATPos = 0;
+        let sumHandledNoTrans = 0, sumCBTNoTrans = 0;
 
         datosAgenteFiltrados.forEach(row => {
-            const h = parseFloat(row['HANDLED INBOUND']) || 0;
-            const aht = parseFloat(row['AHT (S)']) || 0;
+            const h = parseNumeroExcel(row['HANDLED INBOUND']);
+            const aht = parseNumeroExcel(row['AHT (S)']);
             sumHandled += h;
             sumCalcAHT += (h * aht);
             
-            sumFCRReplies += parseFloat(row['IVR FCR REPLIES']) || 0;
-            sumFCRPos += parseFloat(row['IVR FCR POSITIVE']) || 0;
-            sumCSATReplies += parseFloat(row['IVR CSAT REPLIES']) || 0;
-            sumCSATPos += parseFloat(row['IVR CSAT POSITIVE']) || 0;
+            sumFCRReplies += parseNumeroExcel(row['IVR FCR REPLIES']);
+            sumFCRPos += parseNumeroExcel(row['IVR FCR POSITIVE']);
+            sumCSATReplies += parseNumeroExcel(row['IVR CSAT REPLIES']);
+            sumCSATPos += parseNumeroExcel(row['IVR CSAT POSITIVE']);
             
-            sumHandledNoTrans += parseFloat(row['HANDLED INBOUND (NO TRANSFERS)']) || 0;
-            sumCBTNoTrans += parseFloat(row['CALL BLIND TRANSFERS (NO TRANSFERS)']) || 0;
+            sumHandledNoTrans += parseNumeroExcel(row['HANDLED INBOUND (NO TRANSFERS)']);
+            sumCBTNoTrans += parseNumeroExcel(row['CALL BLIND TRANSFERS (NO TRANSFERS)']);
         });
 
-        // Calcular promedios/porcentajes finales
         const ahtTotal = sumHandled > 0 ? (sumCalcAHT / sumHandled) : 0;
         const fcrTotal = sumFCRReplies > 0 ? (sumFCRPos / sumFCRReplies) : 0;
         const csatTotal = sumCSATReplies > 0 ? (sumCSATPos / sumCSATReplies) : 0;
         const ratioTotal = sumHandledNoTrans > 0 ? (sumCBTNoTrans / sumHandledNoTrans) : 0;
 
-        // Actualizar Tarjetas
         const container = document.getElementById('totales-cards');
         container.innerHTML = `
             <div class="card"><h3>AHT Promedio</h3><p>${ahtTotal.toFixed(2)}s</p></div>
@@ -220,17 +227,19 @@
             <div class="card"><h3>% Ratio</h3><p>${(ratioTotal * 100).toFixed(2)}%</p></div>
         `;
 
-        // Actualizar Tabla
         const tbody = document.querySelector('#tabla-diaria tbody');
         tbody.innerHTML = '';
         
         datosAgenteFiltrados.sort((a,b) => (a['DATE'] || '').localeCompare(b['DATE'] || '')).forEach(row => {
             const tr = document.createElement('tr');
             const fecha = row['DATE'] ? row['DATE'].split(' ')[0] : '';
-            const fcrRow = row['% IVR FCR'] ? (parseFloat(row['% IVR FCR']) * 100).toFixed(1) + '%' : '-';
-            const csatRow = row['% IVR CSAT'] ? (parseFloat(row['% IVR CSAT']) * 100).toFixed(1) + '%' : '-';
-            const ratioRow = row['% RATIO (CBT/HANDLED)'] ? (parseFloat(row['% RATIO (CBT/HANDLED)']) * 100).toFixed(1) + '%' : '-';
-            const ahtRow = row['AHT (S)'] ? parseFloat(row['AHT (S)']).toFixed(0) : '-';
+            
+            // Si el CSV ya trae los porcentajes formateados, los mostramos tal cual
+            // Si no, los calculamos usando parseNumeroExcel
+            const fcrRow = row['% IVR FCR'] ? (parseNumeroExcel(row['% IVR FCR']) * 100).toFixed(1) + '%' : '-';
+            const csatRow = row['% IVR CSAT'] ? (parseNumeroExcel(row['% IVR CSAT']) * 100).toFixed(1) + '%' : '-';
+            const ratioRow = row['% RATIO (CBT/HANDLED)'] ? (parseNumeroExcel(row['% RATIO (CBT/HANDLED)']) * 100).toFixed(1) + '%' : '-';
+            const ahtRow = row['AHT (S)'] ? parseNumeroExcel(row['AHT (S)']).toFixed(0) : '-';
             
             tr.innerHTML = `
                 <td>${fecha}</td>
@@ -245,7 +254,6 @@
     }
 
     function resetFiltro() {
-        // Volver a poner las fechas min/max originales
         const fechas = datosBase
             .filter(r => r['Email_Key'] && r['Email_Key'].toLowerCase() === agenteLogueado)
             .map(r => r['DATE'] ? r['DATE'].split(' ')[0] : '')
@@ -258,7 +266,6 @@
         }
     }
 
-    // Iniciar
     cargarDatos();
 </script>
 
