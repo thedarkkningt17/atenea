@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Agentes - Métricas</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; color: #333; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        h1, h2 { color: #d81b60; /* Color MediaMarkt */ text-align: center; }
+        .login-box { text-align: center; margin: 40px 0; }
+        input[type="text"], input[type="email"], input[type="password"] { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; font-size: 16px; }
+        button { background-color: #d81b60; color: white; border: none; padding: 10px 20px; font-size: 16px; border-radius: 5px; cursor: pointer; width: 82%; }
+        button:hover { background-color: #ad1457; }
+        .hidden { display: none; }
+        
+        /* Tablas */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #f8bbd0; color: #333; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+        
+        /* Tarjetas de Totales */
+        .cards-container { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 20px; }
+        .card { background: #fff; border-left: 5px solid #d81b60; padding: 15px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); width: 200px; text-align: center; }
+        .card h3 { margin: 0; font-size: 14px; color: #777; }
+        .card p { margin: 10px 0 0; font-size: 24px; font-weight: bold; color: #333; }
+        
+        #error-msg { color: red; text-align: center; margin-top: 10px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Portal de Agentes</h1>
+    
+    <!-- Formulario de Login -->
+    <div id="login-section" class="login-box">
+        <p>Ingresa tu correo corporativo para ver tus métricas:</p>
+        <input type="email" id="email-input" placeholder="ejemplo@mediamarkt.es">
+        <button onclick="login()">Consultar mis datos</button>
+        <div id="error-msg"></div>
+    </div>
+
+    <!-- Dashboard (Oculto inicialmente) -->
+    <div id="dashboard-section" class="hidden">
+        <h2 id="agent-name">Bienvenido</h2>
+        <button onclick="logout()" style="width: auto; margin-bottom: 20px; background: #666;">Cerrar Sesión</button>
+        
+        <!-- Resumen Total -->
+        <h3>Resumen General del Mes</h3>
+        <div class="cards-container" id="totales-cards">
+            <!-- Las tarjetas se generarán con JS -->
+        </div>
+
+        <!-- Tabla Diaria -->
+        <h3>Detalle Diario</h3>
+        <div style="overflow-x: auto;">
+            <table id="tabla-diaria">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Handled</th>
+                        <th>AHT (S)</th>
+                        <th>% FCR</th>
+                        <th>% CSAT</th>
+                        <th>% Ratio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Se llena con JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Variables globales para guardar los datos
+    let datosTotales = [];
+    let datosBase = [];
+    let agenteLogueado = "";
+
+    // 1. Función para cargar los archivos CSV al iniciar
+    async function cargarDatos() {
+        try {
+            // Cargar totales.csv
+            const resTotales = await fetch('totales.csv');
+            const textTotales = await resTotales.text();
+            datosTotales = parseCSV(textTotales);
+
+            // Cargar base.csv
+            const resBase = await fetch('base.csv');
+            const textBase = await resBase.text();
+            datosBase = parseCSV(textBase);
+            
+            console.log("Datos cargados correctamente");
+        } catch (error) {
+            console.error("Error cargando los CSV. Asegúrate de estar usando un servidor local (XAMPP, Live Server) o sube los archivos a la nube.", error);
+            document.getElementById('error-msg').innerText = "Error: No se pudieron cargar los datos. (Requiere servidor)";
+        }
+    }
+
+    // 2. Parser de CSV básico (convierte texto a JSON)
+    function parseCSV(text) {
+        const lines = text.split('\n').filter(line => line.trim() !== '');
+        const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+        const result = [];
+        
+        for(let i = 1; i < lines.length; i++) {
+            // Manejo simple de comas dentro de comillas
+            const currentline = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+            if(!currentline) continue;
+            
+            const obj = {};
+            headers.forEach((header, index) => {
+                let val = currentline[index] ? currentline[index].replace(/^"|"$/g, '').trim() : "";
+                obj[header] = val;
+            });
+            result.push(obj);
+        }
+        return result;
+    }
+
+    // 3. Función de Login
+    function login() {
+        const email = document.getElementById('email-input').value.trim().toLowerCase();
+        if(!email) return;
+
+        // Buscar agente en los totales
+        const agenteTotal = datosTotales.find(a => a['Email_Key'] && a['Email_Key'].toLowerCase() === email);
+
+        if (agenteTotal) {
+            agenteLogueado = email;
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            document.getElementById('agent-name').innerText = "Hola, " + agenteTotal['NOMBRE COMPLETO'];
+            
+            llenarTarjetas(agenteTotal);
+            llenarTablaDiaria(email);
+        } else {
+            document.getElementById('error-msg').innerText = "Correo no encontrado. Verifica e intenta de nuevo.";
+        }
+    }
+
+    // 4. Función de Logout
+    function logout() {
+        document.getElementById('email-input').value = '';
+        document.getElementById('error-msg').innerText = '';
+        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('dashboard-section').classList.add('hidden');
+    }
+
+    // 5. Llenar las tarjetas de totales
+    function llenarTarjetas(data) {
+        const container = document.getElementById('totales-cards');
+        container.innerHTML = '';
+        
+        // Formatear valores
+        const aht = parseFloat(data['AHT_Total_S']).toFixed(2);
+        const fcr = (parseFloat(data['%_FCR_Total']) * 100).toFixed(2) + '%';
+        const csat = (parseFloat(data['%_CSAT_Total']) * 100).toFixed(2) + '%';
+        const ratio = (parseFloat(data['%_Ratio_Total']) * 100).toFixed(2) + '%';
+
+        const metricas = [
+            { titulo: "AHT Promedio", valor: aht + "s" },
+            { titulo: "% FCR", valor: fcr },
+            { titulo: "% CSAT", valor: csat },
+            { titulo: "% Ratio", valor: ratio }
+        ];
+
+        metricas.forEach(m => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `<h3>${m.titulo}</h3><p>${m.valor}</p>`;
+            container.appendChild(card);
+        });
+    }
+
+    // 6. Llenar la tabla diaria
+    function llenarTablaDiaria(email) {
+        const tbody = document.querySelector('#tabla-diaria tbody');
+        tbody.innerHTML = '';
+        
+        // Filtrar datos base por el agente logueado
+        const filasAgente = datosBase.filter(row => row['Email_Key'] && row['Email_Key'].toLowerCase() === email);
+        
+        filasAgente.forEach(row => {
+            const tr = document.createElement('tr');
+            
+            // Tomar la fecha (quitando la hora si la tiene)
+            let fecha = row['DATE'] ? row['DATE'].split(' ')[0] : '';
+            
+            // Formatear porcentajes si existen en la fila
+            const fcr = row['% IVR FCR'] ? (parseFloat(row['% IVR FCR']) * 100).toFixed(1) + '%' : '-';
+            const csat = row['% IVR CSAT'] ? (parseFloat(row['% IVR CSAT']) * 100).toFixed(1) + '%' : '-';
+            const ratio = row['% RATIO (CBT/HANDLED)'] ? (parseFloat(row['% RATIO (CBT/HANDLED)']) * 100).toFixed(1) + '%' : '-';
+            const aht = row['AHT (S)'] ? parseFloat(row['AHT (S)']).toFixed(0) : '-';
+            
+            tr.innerHTML = `
+                <td>${fecha}</td>
+                <td>${row['HANDLED INBOUND'] || 0}</td>
+                <td>${aht}</td>
+                <td>${fcr}</td>
+                <td>${csat}</td>
+                <td>${ratio}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // Iniciar carga
+    cargarDatos();
+</script>
+
+</body>
+</html>
