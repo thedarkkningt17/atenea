@@ -109,10 +109,10 @@
     }
 
     function parseCSV(text) {
-        // Limpiamos posibles retornos de carro de Windows
-        const lines = text.replace(/\r/g, '').split('\n').filter(line => line.trim() !== '');
+        // Quita el BOM (carácter invisible) y los retornos de carro
+        text = text.replace(/^\uFEFF/, '').replace(/\r/g, '');
         
-        // Detectamos el separador. Como tu Excel usa ';', lo forzamos.
+        const lines = text.split('\n').filter(line => line.trim() !== '');
         const separator = lines[0].includes(';') ? ';' : ','; 
         
         const headers = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
@@ -143,7 +143,6 @@
         }
         return result;
     }
-
     function login() {
         const email = document.getElementById('email-input').value.trim().toLowerCase();
         if(!email) return;
