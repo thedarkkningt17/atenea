@@ -241,7 +241,7 @@
         let sumHandled = 0, sumCalcAHT = 0;
         let sumFCRReplies = 0, sumFCRPos = 0;
         let sumCSATReplies = 0, sumCSATPos = 0;
-        let sumHandledNoTrans = 0, sumCBTNoTrans = 0;
+        let sumCBTNoTrans = 0;
 
         datosAgenteFiltrados.forEach(row => {
             const h = parseNumeroExcel(row['HANDLED INBOUND']);
@@ -253,16 +253,15 @@
             sumFCRPos += parseNumeroExcel(row['IVR FCR POSITIVE']);
             sumCSATReplies += parseNumeroExcel(row['IVR CSAT REPLIES']);
             sumCSATPos += parseNumeroExcel(row['IVR CSAT POSITIVE']);
-            
-            sumHandledNoTrans += parseNumeroExcel(row['HANDLED INBOUND (NO TRANSFERS)']);
+        
             sumCBTNoTrans += parseNumeroExcel(row['CALL BLIND TRANSFERS (NO TRANSFERS)']);
         });
 
         const ahtTotal = sumHandled > 0 ? (sumCalcAHT / sumHandled) : 0;
         const fcrTotal = sumFCRReplies > 0 ? (sumFCRPos / sumFCRReplies) : 0;
         const csatTotal = sumCSATReplies > 0 ? (sumCSATPos / sumCSATReplies) : 0;
-        const ratioTotal = sumHandledNoTrans > 0 ? (sumCBTNoTrans / sumHandledNoTrans) : 0;
-
+        const ratioTotal = sumHandled > 0 ? (sumCBTNoTrans / sumHandled) : 0;
+        
         // Actualizar Tarjetas
         const container = document.getElementById('totales-cards');
         container.innerHTML = `
