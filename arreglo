@@ -292,8 +292,12 @@
             sumCSATReplies += parseNumeroExcel(getVal(row, 'IVR CSAT REPLIES'));
             sumCSATPos += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
             
-            sumCBTNoTrans += parseNumeroExcel(getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)'));
-            sumHandledNoTrans += parseNumeroExcel(getVal(row, 'HANDLED INBOUND (NO TRANSFERS)'));
+            // Extraemos el número ignorando si viene con % o comas
+let cbtStr = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0";
+let hntStr = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)') || "0";
+
+sumCBTNoTrans += parseFloat(String(cbtStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
+sumHandledNoTrans += parseFloat(String(hntStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
         });
 
         const ahtTotal = sumHandled > 0 ? (sumCalcAHT / sumHandled) : 0;
@@ -327,7 +331,7 @@
             // AQUI ESTA EL TRUCO: Si el valor no existe, mostramos '-'
             const fcrRow = fcrVal ? (parseNumeroExcel(fcrVal) * 100).toFixed(1) + '%' : '-';
             const csatRow = csatVal ? (parseNumeroExcel(csatVal) * 100).toFixed(1) + '%' : '-';
-            const ratioRow = ratioVal ? (parseNumeroExcel(ratioVal) * 100).toFixed(1) + '%' : '-';
+            const ratioRow = ratioVal ? (parseNumeroExcel(ratioVal) * 100).toFixed(1) + '%' : (row['% RATIO (CBT/HANDLED)'] ? row['% RATIO (CBT/HANDLED)'] : '-');
             const ahtRow = getVal(row, 'AHT (S)') ? parseNumeroExcel(getVal(row, 'AHT (S)')).toFixed(0) : '-';
             
             tr.innerHTML = `
