@@ -117,7 +117,6 @@
     let agenteLogueado = "";
     let datosAgenteFiltrados = []; 
 
-    // Limpieza de números de Excel (convierte "1.234,56" o "88,2%" a números de JS)
     function parseNumeroExcel(val) {
         if (!val) return 0;
         let str = String(val).trim();
@@ -237,7 +236,7 @@
     function logout() {
         document.getElementById('email-input').value = '';
         document.getElementById('error-msg').style.display = 'none';
-        document.getElementById('login-section').classList.remove('hidden');
+        document.getElementById('login-section').classList.add('hidden');
         document.getElementById('dashboard-section').classList.add('hidden');
         document.getElementById('header-user-info').innerText = "Portal de Agentes";
     }
@@ -255,7 +254,6 @@
             return fechaRow >= inicio && fechaRow <= fin;
         });
 
-        // Limpiamos duplicados por fecha
         let fechasUnicas = new Set();
         datosAgenteFiltrados = filasFiltradas.filter(row => {
             let f = getVal(row, 'DATE');
@@ -280,7 +278,6 @@
             sumCSATReplies += parseNumeroExcel(getVal(row, 'IVR CSAT REPLIES'));
             sumCSATPos += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
             
-            // AQUI ESTA LA MAGIA PARA EL RATIO TOTAL
             let cbtStr = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0";
             let hntStr = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)') || "0";
             sumCBTNoTrans += parseFloat(String(cbtStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
@@ -290,9 +287,7 @@
         const ahtTotal = sumHandled > 0 ? (sumCalcAHT / sumHandled) : 0;
         const fcrTotal = sumFCRReplies > 0 ? (sumFCRPos / sumFCRReplies) : 0;
         const csatTotal = sumCSATReplies > 0 ? (sumCSATPos / sumCSATReplies) : 0;
-        
-        // Leemos el ratio total directo del archivo TOTALES_AGENTE.csv
-        const ratioTotal = parseNumeroExcel(getVal(datosTotales.find(a => (getVal(a, 'Email_Key')||"").toLowerCase() === agenteLogueado), '%_Ratio_Total')) || 0;
+        const ratioTotal = sumHandledNoTrans > 0 ? (sumCBTNoTrans / sumHandledNoTrans) : 0;
 
         const container = document.getElementById('totales-cards');
         container.innerHTML = `
@@ -316,7 +311,6 @@
             const fcrVal = getVal(row, '% IVR FCR');
             const csatVal = getVal(row, '% IVR CSAT');
             
-            // AQUI ESTA LA MAGIA PARA EL RATIO DIARIO
             let cbtDia = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0";
             let hntDia = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)') || "0";
             let numCBT = parseFloat(String(cbtDia).replace('%', '').replace('.', '').replace(',', '.')) || 0;
@@ -325,9 +319,7 @@
 
             const fcrRow = fcrVal ? (parseNumeroExcel(fcrVal) * 100).toFixed(1) + '%' : '-';
             const csatRow = csatVal ? (parseNumeroExcel(csatVal) * 100).toFixed(1) + '%' : '-';
-            // Tomamos el % de ratio que ya viene calculado en el CSV, si existe
-            const ratioCSV = getVal(row, '% RATIO (CBT/HANDLED)');
-            const ratioRow = ratioCSV ? (parseNumeroExcel(ratioCSV) * 100).toFixed(1) + '%' : '-';
+            const ratioRow = numHNT > 0 ? (calcRatioDia * 100).toFixed(1) + '%' : '-';
             const ahtRow = getVal(row, 'AHT (S)') ? parseNumeroExcel(getVal(row, 'AHT (S)')).toFixed(0) : '-';
             
             tr.innerHTML = `
