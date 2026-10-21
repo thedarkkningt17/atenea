@@ -6,6 +6,8 @@
     <title>Team Adrian | Portal de Agentes</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23d81b60'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' font-family='Arial, sans-serif' font-size='50' font-weight='bold' fill='white'>TA</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Chart.js local (súbelo a la raíz del repo como chart.js) -->
+    <script src="chart.js"></script>
     <style>
         :root {
             --primary-color: #d81b60;
@@ -153,6 +155,36 @@
         .card.purple::after { background: var(--purple); } .card.purple .kpi-icon { background: #ede9fe; color: var(--purple); }
         .card.orange::after { background: var(--warning); } .card.orange .kpi-icon { background: #fef3c7; color: var(--warning); }
 
+        /* ---------- CHARTS ---------- */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+        .chart-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-sm);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .chart-header h3 { font-size: 15px; font-weight: 700; margin: 0; }
+        .chart-sub { font-size: 12px; color: var(--text-muted); }
+        .chart-body { padding: 16px 20px 20px; position: relative; height: 300px; }
+        .chart-body canvas { max-height: 100%; }
+
         /* ---------- TABLE ---------- */
         .table-container {
             background: var(--surface-color); border-radius: var(--radius);
@@ -185,6 +217,7 @@
             .container { padding: 20px 16px 32px; }
             .app-header { padding: 14px 16px; }
             .dashboard-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .charts-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -205,14 +238,6 @@
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
                 Dashboard
             </div>
-            <div class="nav-item">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-                Métricas
-            </div>
-            <div class="nav-item">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                Histórico
-            </div>
         </nav>
         <div class="sidebar-footer">Ledezma Enterprises © 2026</div>
     </aside>
@@ -225,11 +250,11 @@
                 <div class="breadcrumb">Inicio / <span class="current">Dashboard</span></div>
             </div>
             <div class="header-right">
-                <div class="user-chip">
+                <div class="user-chip hidden" id="user-chip">
                     <div class="user-avatar" id="header-avatar">?</div>
                     <div class="user-meta">
-                        <strong id="header-user-name">Invitado</strong>
-                        <small id="header-user-email">Sin sesión</small>
+                        <strong id="header-user-name">—</strong>
+                        <small id="header-user-email">—</small>
                     </div>
                 </div>
                 <button class="btn-logout hidden" id="logout-btn" onclick="logout()">Cerrar Sesión</button>
@@ -273,6 +298,27 @@
 
                 <div class="cards-container" id="totales-cards"></div>
 
+                <div class="charts-grid">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Evolución diaria</h3>
+                            <span class="chart-sub">Llamadas, AHT y FCR por día</span>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chart-evolucion"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>Distribución de calidad</h3>
+                            <span class="chart-sub">FCR vs CSAT vs CBT en el periodo</span>
+                        </div>
+                        <div class="chart-body">
+                            <canvas id="chart-calidad"></canvas>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="table-container">
                     <div class="table-header">
                         <h3>Detalle Diario de Gestión</h3>
@@ -303,11 +349,12 @@
     </div>
 
 <script>
-    // ... (TODO TU JS ORIGINAL SE MANTIENE IGUAL) ...
     let datosTotales = [];
     let datosBase = [];
     let agenteLogueado = "";
     let datosAgenteFiltrados = [];
+    let chartEvolucion = null;
+    let chartCalidad = null;
 
     function parseNumeroExcel(val) {
         if (!val) return 0;
@@ -401,6 +448,7 @@
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('dashboard-section').classList.remove('hidden');
             document.getElementById('logout-btn').classList.remove('hidden');
+            document.getElementById('user-chip').classList.remove('hidden');
 
             let nombre = getVal(agenteTotal, 'NOMBRE COMPLETO') || "Agente";
             document.getElementById('agent-name').innerText = "Hola, " + nombre;
@@ -434,9 +482,9 @@
         document.getElementById('login-section').classList.remove('hidden');
         document.getElementById('dashboard-section').classList.add('hidden');
         document.getElementById('logout-btn').classList.add('hidden');
-        document.getElementById('header-user-name').innerText = "Invitado";
-        document.getElementById('header-user-email').innerText = "Sin sesión";
-        document.getElementById('header-avatar').innerText = "?";
+        document.getElementById('user-chip').classList.add('hidden');
+        if (chartEvolucion) { chartEvolucion.destroy(); chartEvolucion = null; }
+        if (chartCalidad)   { chartCalidad.destroy();   chartCalidad = null; }
     }
 
     function aplicarFiltro() {
@@ -556,6 +604,141 @@
         });
 
         document.getElementById('table-count').innerText = datosAgenteFiltrados.length + ' registros';
+
+        renderCharts();
+    }
+
+    function renderCharts() {
+        const filas = [...datosAgenteFiltrados].sort((a,b) => {
+            let fa = formatearFechaParaInput(getVal(a, 'DATE'));
+            let fb = formatearFechaParaInput(getVal(b, 'DATE'));
+            return fa.localeCompare(fb);
+        });
+
+        const labels = filas.map(r => {
+            const d = getVal(r, 'DATE');
+            return d ? d.split(' ')[0] : '';
+        });
+
+        const handled = filas.map(r => parseNumeroExcel(getVal(r, 'HANDLED INBOUND')));
+        const aht     = filas.map(r => parseNumeroExcel(getVal(r, 'AHT (S)')));
+        const fcr     = filas.map(r => parseNumeroExcel(getVal(r, '% IVR FCR')) * 100);
+
+        let sumFCR = 0, sumCSAT = 0, sumCBT = 0;
+        datosAgenteFiltrados.forEach(row => {
+            sumFCR  += parseNumeroExcel(getVal(row, 'IVR FCR POSITIVE'));
+            sumCSAT += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
+            const cbt = parseFloat(String(getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0").replace('%','').replace('.','').replace(',','.')) || 0;
+            sumCBT += cbt;
+        });
+
+        if (chartEvolucion) chartEvolucion.destroy();
+        if (chartCalidad)   chartCalidad.destroy();
+
+        const ctx1 = document.getElementById('chart-evolucion').getContext('2d');
+        chartEvolucion = new Chart(ctx1, {
+            data: {
+                labels,
+                datasets: [
+                    {
+                        type: 'bar',
+                        label: 'Llamadas',
+                        data: handled,
+                        backgroundColor: 'rgba(59,130,246,0.65)',
+                        borderRadius: 4,
+                        yAxisID: 'y',
+                        order: 2
+                    },
+                    {
+                        type: 'line',
+                        label: 'AHT (s)',
+                        data: aht,
+                        borderColor: '#d81b60',
+                        backgroundColor: 'rgba(216,27,96,0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#d81b60',
+                        yAxisID: 'y1',
+                        order: 1
+                    },
+                    {
+                        type: 'line',
+                        label: '% FCR',
+                        data: fcr,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16,185,129,0.1)',
+                        tension: 0.35,
+                        fill: false,
+                        pointRadius: 3,
+                        pointBackgroundColor: '#10b981',
+                        yAxisID: 'y1',
+                        order: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 } } },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 10,
+                        titleFont: { size: 12, weight: '600' },
+                        bodyFont: { size: 12 },
+                        cornerRadius: 6
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Llamadas', font: { size: 10 }, color: '#6b7280' },
+                        grid: { color: '#f1f5f9' },
+                        ticks: { font: { size: 10 }, color: '#6b7280' }
+                    },
+                    y1: {
+                        position: 'right',
+                        beginAtZero: true,
+                        title: { display: true, text: 'AHT / %', font: { size: 10 }, color: '#6b7280' },
+                        grid: { drawOnChartArea: false },
+                        ticks: { font: { size: 10 }, color: '#6b7280' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 10 }, color: '#6b7280', maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }
+                    }
+                }
+            }
+        });
+
+        const ctx2 = document.getElementById('chart-calidad').getContext('2d');
+        chartCalidad = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+                labels: ['FCR Positivos', 'CSAT Positivos', 'CBT (No Transfers)'],
+                datasets: [{
+                    data: [sumFCR, sumCSAT, sumCBT],
+                    backgroundColor: ['#10b981', '#8b5cf6', '#f59e0b'],
+                    borderWidth: 0,
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '65%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 11 } } },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 10,
+                        cornerRadius: 6
+                    }
+                }
+            }
+        });
     }
 
     function resetFiltro() {
