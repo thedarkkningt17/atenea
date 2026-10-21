@@ -4,304 +4,58 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Team Adrian | Portal de Agentes</title>
-    
-    <!-- FAVICON CON INICIALES "TA" (Generado en SVG sin necesidad de archivos externos) -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23d81b60'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' font-family='Arial, sans-serif' font-size='50' font-weight='bold' fill='white'>TA</text></svg>">
-    
-    <!-- Importamos la fuente Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #d81b60; /* Rojo MediaMarkt */
-            --primary-dark: #ad1457;
-            --bg-color: #f4f6f8;
-            --surface-color: #ffffff;
-            --text-main: #1f2937;
-            --text-muted: #6b7280;
-            --border-color: #e5e7eb;
-        }
-
+        :root { --primary-color: #d81b60; --primary-dark: #ad1457; --bg-color: #f4f6f8; --surface-color: #ffffff; --text-main: #1f2937; --text-muted: #6b7280; --border-color: #e5e7eb; }
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-main); 
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Header Empresarial */
-        .app-header {
-            background-color: #111827;
-            color: white;
-            padding: 15px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .app-header h1 {
-            font-size: 20px;
-            font-weight: 400; /* Texto normal para el primer texto */
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            letter-spacing: 0.5px;
-        }
-        
-        .app-header h1 span.brand {
-            color: var(--primary-color);
-            font-weight: 700;
-        }
-
-        .app-header h1 span.divider {
-            color: #4b5563;
-            font-weight: 300;
-        }
-
-        .user-info {
-            font-size: 14px;
-            color: #9ca3af;
-        }
-
-        /* Contenedor Principal */
-        .container { 
-            width: 100%;
-            max-width: 1200px; 
-            margin: 40px auto; 
-            padding: 0 20px;
-            flex: 1;
-        }
-
-        /* Caja de Login */
-        .login-box { 
-            background: var(--surface-color);
-            max-width: 400px;
-            margin: 60px auto;
-            padding: 40px;
-            border-radius: 8px; 
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-            border-top: 4px solid var(--primary-color);
-            text-align: center;
-        }
-
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; }
+        .app-header { background-color: #111827; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .app-header h1 { font-size: 20px; font-weight: 400; display: flex; align-items: center; gap: 8px; }
+        .app-header h1 span.brand { color: var(--primary-color); font-weight: 700; }
+        .app-header h1 span.divider { color: #4b5563; font-weight: 300; }
+        .user-info { font-size: 14px; color: #9ca3af; }
+        .container { width: 100%; max-width: 1200px; margin: 40px auto; padding: 0 20px; flex: 1; }
+        .login-box { background: var(--surface-color); max-width: 400px; margin: 60px auto; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-top: 4px solid var(--primary-color); text-align: center; }
         .login-box h2 { font-size: 22px; margin-bottom: 10px; }
         .login-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 25px; }
-
-        input[type="email"], input[type="date"] { 
-            width: 100%;
-            padding: 12px; 
-            margin-bottom: 15px; 
-            border: 1px solid var(--border-color); 
-            border-radius: 6px; 
-            font-size: 14px;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.2s;
-        }
-
-        input[type="email"]:focus, input[type="date"]:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.1);
-        }
-
-        /* Botones */
-        button { 
-            background-color: var(--primary-color); 
-            color: white; 
-            border: none; 
-            padding: 12px 20px; 
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 6px; 
-            cursor: pointer; 
-            font-family: 'Inter', sans-serif;
-            transition: background-color 0.2s;
-            width: 100%;
-        }
-
+        input[type="email"], input[type="date"] { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 14px; font-family: 'Inter', sans-serif; }
+        input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(216, 27, 96, 0.1); }
+        button { background-color: var(--primary-color); color: white; border: none; padding: 12px 20px; font-size: 14px; font-weight: 600; border-radius: 6px; cursor: pointer; font-family: 'Inter', sans-serif; width: 100%; }
         button:hover { background-color: var(--primary-dark); }
-
-        .btn-secondary {
-            background-color: #fff;
-            color: var(--text-main);
-            border: 1px solid var(--border-color);
-            width: auto;
-        }
-        
-        .btn-secondary:hover { background-color: #f9fafb; }
-
-        .btn-logout {
-            background-color: transparent;
-            color: #ef4444;
-            border: 1px solid #ef4444;
-            padding: 6px 15px;
-            font-size: 13px;
-            width: auto;
-        }
-        .btn-logout:hover { background-color: #fef2f2; }
-
-        /* Dashboard Header */
-        .dashboard-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
+        .btn-secondary { background-color: #fff; color: var(--text-main); border: 1px solid var(--border-color); width: auto; }
+        .btn-logout { background-color: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 6px 15px; font-size: 13px; width: auto; }
+        .dashboard-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
         .dashboard-header h2 { font-size: 24px; color: var(--text-main); margin-bottom: 5px; }
         .dashboard-header p { color: var(--text-muted); font-size: 14px; }
-
-        /* Filtros */
-        .filter-box { 
-            background: var(--surface-color); 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin-bottom: 30px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
+        .filter-box { background: var(--surface-color); padding: 20px; border-radius: 8px; margin-bottom: 30px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); display: flex; align-items: center; flex-wrap: wrap; gap: 15px; }
         .filter-box label { font-size: 14px; font-weight: 600; color: var(--text-main); }
         .filter-box input { width: auto; margin-bottom: 0; }
         .filter-box button { width: auto; }
-
-        /* Grid de Tarjetas */
-        .cards-container { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
-            gap: 20px; 
-            margin-bottom: 40px; 
-        }
-
-        .card { 
-            background: var(--surface-color); 
-            padding: 24px; 
-            border-radius: 8px; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border-left: 4px solid var(--primary-color);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card h3 { 
-            font-size: 13px; 
-            color: var(--text-muted); 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .card p { 
-            font-size: 32px; 
-            font-weight: 700; 
-            color: var(--text-main); 
-            line-height: 1;
-        }
-
-        /* Tabla Empresarial */
-        .table-container {
-            background: var(--surface-color);
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            overflow: hidden;
-        }
-
-        .table-header {
-            padding: 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .card { background: var(--surface-color); padding: 24px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border-left: 4px solid var(--primary-color); }
+        .card h3 { font-size: 13px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 10px; }
+        .card p { font-size: 32px; font-weight: 700; color: var(--text-main); line-height: 1; }
+        .table-container { background: var(--surface-color); border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); overflow: hidden; }
+        .table-header { padding: 20px; border-bottom: 1px solid var(--border-color); }
         .table-header h3 { font-size: 16px; margin: 0; }
-
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
-        
-        th { 
-            background-color: #f9fafb; 
-            color: var(--text-muted); 
-            font-weight: 600; 
-            text-align: left; 
-            padding: 12px 20px;
-            border-bottom: 1px solid var(--border-color);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        td { 
-            padding: 14px 20px; 
-            border-bottom: 1px solid var(--border-color); 
-            color: var(--text-main);
-        }
-        
+        th { background-color: #f9fafb; color: var(--text-muted); font-weight: 600; text-align: left; padding: 12px 20px; border-bottom: 1px solid var(--border-color); font-size: 12px; text-transform: uppercase; }
+        td { padding: 14px 20px; border-bottom: 1px solid var(--border-color); color: var(--text-main); }
         tr:hover { background-color: #f9fafb; }
-
-        /* Footer */
-        .app-footer {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-muted);
-            font-size: 12px;
-            margin-top: auto;
-            border-top: 1px solid var(--border-color);
-        }
-        
-        .app-footer strong {
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        /* Mensajes de error */
-        #error-msg { 
-            color: #ef4444; 
-            background: #fef2f2;
-            padding: 10px; 
-            border-radius: 6px;
-            font-size: 13px; 
-            margin-top: 15px; 
-            display: none;
-        }
-
+        .app-footer { text-align: center; padding: 20px; color: var(--text-muted); font-size: 12px; margin-top: auto; border-top: 1px solid var(--border-color); }
+        #error-msg { color: #ef4444; background: #fef2f2; padding: 10px; border-radius: 6px; font-size: 13px; margin-top: 15px; display: none; }
         .hidden { display: none !important; }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-            .filter-box { flex-direction: column; align-items: flex-start; }
-            .filter-box input { width: 100%; }
-            .filter-box button { width: 100%; }
-            th, td { padding: 10px; }
-            .app-header { padding: 15px 20px; }
-        }
     </style>
 </head>
 <body>
 
-    <!-- Header Superior -->
     <header class="app-header">
-        <h1>
-            <span class="brand">Abai</span> 
-            <span class="divider">/</span> 
-            MediaMarkt
-        </h1>
+        <h1><span class="brand">Abai</span> <span class="divider">/</span> MediaMarkt</h1>
         <div class="user-info" id="header-user-info">Portal de Agentes</div>
     </header>
 
     <div class="container">
-        
-        <!-- VISTA 1: LOGIN -->
         <div id="login-section" class="login-box">
             <h2>Bienvenido</h2>
             <p>Ingresa tu correo corporativo para acceder a tus métricas de rendimiento.</p>
@@ -310,10 +64,7 @@
             <div id="error-msg"></div>
         </div>
 
-        <!-- VISTA 2: DASHBOARD -->
         <div id="dashboard-section" class="hidden">
-            
-            <!-- Cabecera del Dashboard -->
             <div class="dashboard-header">
                 <div>
                     <h2 id="agent-name">Cargando...</h2>
@@ -322,7 +73,6 @@
                 <button class="btn-logout" onclick="logout()">Cerrar Sesión</button>
             </div>
             
-            <!-- Filtros de Fecha -->
             <div class="filter-box">
                 <label>Periodo:</label>
                 <input type="date" id="fecha-inicio">
@@ -332,12 +82,8 @@
                 <button class="btn-secondary" onclick="resetFiltro()">Ver Todo el Mes</button>
             </div>
 
-            <!-- Tarjetas de KPI -->
-            <div class="cards-container" id="totales-cards">
-                <!-- Inyectado por JS -->
-            </div>
+            <div class="cards-container" id="totales-cards"></div>
 
-            <!-- Tabla de Datos -->
             <div class="table-container">
                 <div class="table-header">
                     <h3>Detalle Diario de Gestión</h3>
@@ -354,16 +100,13 @@
                                 <th>% Ratio (CBT)</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <!-- Inyectado por JS -->
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="app-footer">
         Diseñado por <strong>Ledezma Enterprises</strong> &copy; 2026
     </footer>
@@ -395,6 +138,13 @@
             return `${anio}-${mes}-${dia}`;
         }
         return f; 
+    }
+
+    // FUNCIÓN MÁGICA: Busca la columna sin importar si está en mayúscula o minúscula
+    function getVal(row, columnName) {
+        if (!row) return null;
+        const key = Object.keys(row).find(k => k.trim().toUpperCase() === columnName.trim().toUpperCase());
+        return key ? row[key] : null;
     }
 
     async function cargarDatos() {
@@ -458,19 +208,28 @@
         const email = document.getElementById('email-input').value.trim().toLowerCase();
         if(!email) return;
         
-        const agenteTotal = datosTotales.find(a => a['Email_Key'] && a['Email_Key'].toLowerCase() === email);
+        // Usamos getVal para buscar el email y el nombre
+        const agenteTotal = datosTotales.find(a => {
+            let e = getVal(a, 'Email_Key');
+            return e && e.toLowerCase() === email;
+        });
         
         if (agenteTotal) {
             agenteLogueado = email;
             
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('dashboard-section').classList.remove('hidden');
-            document.getElementById('agent-name').innerText = "Hola, " + agenteTotal['NOMBRE COMPLETO'];
-            document.getElementById('header-user-info').innerText = agenteTotal['NOMBRE COMPLETO'] + " | " + email;
+            
+            let nombre = getVal(agenteTotal, 'NOMBRE COMPLETO') || "Agente";
+            document.getElementById('agent-name').innerText = "Hola, " + nombre;
+            document.getElementById('header-user-info').innerText = nombre + " | " + email;
             
             const fechas = datosBase
-                .filter(r => r['Email_Key'] && r['Email_Key'].toLowerCase() === email)
-                .map(r => formatearFechaParaInput(r['DATE']))
+                .filter(r => {
+                    let e = getVal(r, 'Email_Key');
+                    return e && e.toLowerCase() === email;
+                })
+                .map(r => formatearFechaParaInput(getVal(r, 'DATE')))
                 .filter(f => f)
                 .sort();
             
@@ -500,14 +259,15 @@
         if(!inicio || !fin) return;
 
         let filasFiltradas = datosBase.filter(row => {
-            if(!row['Email_Key'] || row['Email_Key'].toLowerCase() !== agenteLogueado) return false;
-            let fechaRow = formatearFechaParaInput(row['DATE']);
+            let e = getVal(row, 'Email_Key');
+            if(!e || e.toLowerCase() !== agenteLogueado) return false;
+            let fechaRow = formatearFechaParaInput(getVal(row, 'DATE'));
             return fechaRow >= inicio && fechaRow <= fin;
         });
 
         let fechasUnicas = new Set();
         datosAgenteFiltrados = filasFiltradas.filter(row => {
-            let f = row['DATE'];
+            let f = getVal(row, 'DATE');
             if (!fechasUnicas.has(f)) {
                 fechasUnicas.add(f);
                 return true;
@@ -519,65 +279,60 @@
         let sumFCRReplies = 0, sumFCRPos = 0;
         let sumCSATReplies = 0, sumCSATPos = 0;
         let sumCBTNoTrans = 0;
+        let sumHandledNoTrans = 0; // Agregado para el ratio
 
         datosAgenteFiltrados.forEach(row => {
-            const h = parseNumeroExcel(row['HANDLED INBOUND']);
-            const aht = parseNumeroExcel(row['AHT (S)']);
+            const h = parseNumeroExcel(getVal(row, 'HANDLED INBOUND'));
+            const aht = parseNumeroExcel(getVal(row, 'AHT (S)'));
             sumHandled += h;
             sumCalcAHT += (h * aht);
             
-            sumFCRReplies += parseNumeroExcel(row['IVR FCR REPLIES']);
-            sumFCRPos += parseNumeroExcel(row['IVR FCR POSITIVE']);
-            sumCSATReplies += parseNumeroExcel(row['IVR CSAT REPLIES']);
-            sumCSATPos += parseNumeroExcel(row['IVR CSAT POSITIVE']);
+            sumFCRReplies += parseNumeroExcel(getVal(row, 'IVR FCR REPLIES'));
+            sumFCRPos += parseNumeroExcel(getVal(row, 'IVR FCR POSITIVE'));
+            sumCSATReplies += parseNumeroExcel(getVal(row, 'IVR CSAT REPLIES'));
+            sumCSATPos += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
             
-            sumCBTNoTrans += parseNumeroExcel(row['CALL BLIND TRANSFERS (NO TRANSFERS)']);
+            sumCBTNoTrans += parseNumeroExcel(getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)'));
+            sumHandledNoTrans += parseNumeroExcel(getVal(row, 'HANDLED INBOUND (NO TRANSFERS)'));
         });
 
         const ahtTotal = sumHandled > 0 ? (sumCalcAHT / sumHandled) : 0;
         const fcrTotal = sumFCRReplies > 0 ? (sumFCRPos / sumFCRReplies) : 0;
         const csatTotal = sumCSATReplies > 0 ? (sumCSATPos / sumCSATReplies) : 0;
-        const ratioTotal = sumHandled > 0 ? (sumCBTNoTrans / sumHandled) : 0;
+        const ratioTotal = sumHandledNoTrans > 0 ? (sumCBTNoTrans / sumHandledNoTrans) : 0;
 
         const container = document.getElementById('totales-cards');
         container.innerHTML = `
-            <div class="card">
-                <h3>AHT Promedio</h3>
-                <p>${ahtTotal.toFixed(2)}<span style="font-size: 16px; color: #6b7280; font-weight: 400;">s</span></p>
-            </div>
-            <div class="card">
-                <h3>% FCR</h3>
-                <p>${(fcrTotal * 100).toFixed(2)}<span style="font-size: 16px; color: #6b7280; font-weight: 400;">%</span></p>
-            </div>
-            <div class="card">
-                <h3>% CSAT</h3>
-                <p>${(csatTotal * 100).toFixed(2)}<span style="font-size: 16px; color: #6b7280; font-weight: 400;">%</span></p>
-            </div>
-            <div class="card">
-                <h3>% Ratio (CBT)</h3>
-                <p>${(ratioTotal * 100).toFixed(2)}<span style="font-size: 16px; color: #6b7280; font-weight: 400;">%</span></p>
-            </div>
+            <div class="card"><h3>AHT Promedio</h3><p>${ahtTotal.toFixed(2)}<span style="font-size: 16px; color: #6b7280; font-weight: 400;">s</span></p></div>
+            <div class="card"><h3>% FCR</h3><p>${(fcrTotal * 100).toFixed(2)}<span style="font-size: 16px; color: #6b7280; font-weight: 400;">%</span></p></div>
+            <div class="card"><h3>% CSAT</h3><p>${(csatTotal * 100).toFixed(2)}<span style="font-size: 16px; color: #6b7280; font-weight: 400;">%</span></p></div>
+            <div class="card"><h3>% Ratio (CBT)</h3><p>${(ratioTotal * 100).toFixed(2)}<span style="font-size: 16px; color: #6b7280; font-weight: 400;">%</span></p></div>
         `;
 
         const tbody = document.querySelector('#tabla-diaria tbody');
         tbody.innerHTML = '';
         
         datosAgenteFiltrados.sort((a,b) => {
-            let fa = formatearFechaParaInput(a['DATE']);
-            let fb = formatearFechaParaInput(b['DATE']);
+            let fa = formatearFechaParaInput(getVal(a, 'DATE'));
+            let fb = formatearFechaParaInput(getVal(b, 'DATE'));
             return fa.localeCompare(fb);
         }).forEach(row => {
             const tr = document.createElement('tr');
-            let fechaMostrar = row['DATE'] ? row['DATE'].split(' ')[0] : '';
+            let fechaMostrar = getVal(row, 'DATE') ? getVal(row, 'DATE').split(' ')[0] : '';
             
-            const fcrRow = row['% IVR FCR'] ? (parseNumeroExcel(row['% IVR FCR']) * 100).toFixed(1) + '%' : '-';
-            const csatRow = row['% IVR CSAT'] ? (parseNumeroExcel(row['% IVR CSAT']) * 100).toFixed(1) + '%' : '-';
-            const ratioRow = row['% RATIO (CBT/HANDLED)'] ? (parseNumeroExcel(row['% RATIO (CBT/HANDLED)']) * 100).toFixed(1) + '%' : '-';
-            const ahtRow = row['AHT (S)'] ? parseNumeroExcel(row['AHT (S)']).toFixed(0) : '-';
+            const fcrVal = getVal(row, '% IVR FCR');
+            const csatVal = getVal(row, '% IVR CSAT');
+            const ratioVal = getVal(row, '% RATIO (CBT/HANDLED)');
+            
+            // AQUI ESTA EL TRUCO: Si el valor no existe, mostramos '-'
+            const fcrRow = fcrVal ? (parseNumeroExcel(fcrVal) * 100).toFixed(1) + '%' : '-';
+            const csatRow = csatVal ? (parseNumeroExcel(csatVal) * 100).toFixed(1) + '%' : '-';
+            const ratioRow = ratioVal ? (parseNumeroExcel(ratioVal) * 100).toFixed(1) + '%' : '-';
+            const ahtRow = getVal(row, 'AHT (S)') ? parseNumeroExcel(getVal(row, 'AHT (S)')).toFixed(0) : '-';
             
             tr.innerHTML = `
                 <td>${fechaMostrar}</td>
-                <td>${row['HANDLED INBOUND'] || 0}</td>
+                <td>${getVal(row, 'HANDLED INBOUND') || 0}</td>
                 <td>${ahtRow}</td>
                 <td>${fcrRow}</td>
                 <td>${csatRow}</td>
@@ -589,8 +344,11 @@
 
     function resetFiltro() {
         const fechas = datosBase
-            .filter(r => r['Email_Key'] && r['Email_Key'].toLowerCase() === agenteLogueado)
-            .map(r => formatearFechaParaInput(r['DATE']))
+            .filter(r => {
+                let e = getVal(r, 'Email_Key');
+                return e && e.toLowerCase() === agenteLogueado;
+            })
+            .map(r => formatearFechaParaInput(getVal(r, 'DATE')))
             .filter(f => f)
             .sort();
         if(fechas.length > 0) {
