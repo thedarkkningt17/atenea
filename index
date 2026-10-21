@@ -117,6 +117,7 @@
     let agenteLogueado = "";
     let datosAgenteFiltrados = []; 
 
+    // Limpieza de números de Excel (convierte "1.234,56" o "88,2%" a números de JS)
     function parseNumeroExcel(val) {
         if (!val) return 0;
         let str = String(val).trim();
@@ -140,7 +141,6 @@
         return f; 
     }
 
-    // FUNCIÓN MÁGICA: Busca la columna sin importar si está en mayúscula o minúscula
     function getVal(row, columnName) {
         if (!row) return null;
         const key = Object.keys(row).find(k => k.trim().toUpperCase() === columnName.trim().toUpperCase());
@@ -168,26 +168,18 @@
         text = text.replace(/^\uFEFF/, '').replace(/\r/g, ''); 
         const lines = text.split('\n').filter(line => line.trim() !== '');
         const separator = lines[0].includes(';') ? ';' : ','; 
-        
         const headers = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
         const result = [];
-        
         for(let i = 1; i < lines.length; i++) {
             let currentline = [];
             let inQuotes = false;
             let currentWord = "";
-            
             for (let char of lines[i]) {
                 if (char === '"') inQuotes = !inQuotes;
-                else if (char === separator && !inQuotes) {
-                    currentline.push(currentWord);
-                    currentWord = "";
-                } else {
-                    currentWord += char;
-                }
+                else if (char === separator && !inQuotes) { currentline.push(currentWord); currentWord = ""; }
+                else { currentWord += char; }
             }
             currentline.push(currentWord); 
-
             const obj = {};
             headers.forEach((header, index) => {
                 let val = currentline[index] ? currentline[index].trim().replace(/^"|"$/g, '') : "";
@@ -208,7 +200,6 @@
         const email = document.getElementById('email-input').value.trim().toLowerCase();
         if(!email) return;
         
-        // Usamos getVal para buscar el email y el nombre
         const agenteTotal = datosTotales.find(a => {
             let e = getVal(a, 'Email_Key');
             return e && e.toLowerCase() === email;
@@ -216,7 +207,6 @@
         
         if (agenteTotal) {
             agenteLogueado = email;
-            
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('dashboard-section').classList.remove('hidden');
             
@@ -265,13 +255,11 @@
             return fechaRow >= inicio && fechaRow <= fin;
         });
 
+        // Limpiamos duplicados por fecha
         let fechasUnicas = new Set();
         datosAgenteFiltrados = filasFiltradas.filter(row => {
             let f = getVal(row, 'DATE');
-            if (!fechasUnicas.has(f)) {
-                fechasUnicas.add(f);
-                return true;
-            }
+            if (!fechasUnicas.has(f)) { fechasUnicas.add(f); return true; }
             return false;
         });
 
@@ -279,7 +267,7 @@
         let sumFCRReplies = 0, sumFCRPos = 0;
         let sumCSATReplies = 0, sumCSATPos = 0;
         let sumCBTNoTrans = 0;
-        let sumHandledNoTrans = 0; // Agregado para el ratio
+        let sumHandledNoTrans = 0;
 
         datosAgenteFiltrados.forEach(row => {
             const h = parseNumeroExcel(getVal(row, 'HANDLED INBOUND'));
@@ -292,17 +280,18 @@
             sumCSATReplies += parseNumeroExcel(getVal(row, 'IVR CSAT REPLIES'));
             sumCSATPos += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
             
-            // Extraemos el número ignorando si viene con % o comas
-let cbtStr = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0";
-let hntStr = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)') || "0";
-
-sumCBTNoTrans += parseFloat(String(cbtStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
-sumHandledNoTrans += parseFloat(String(hntStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
+            // AQUI ESTA LA MAGIA PARA EL RATIO TOTAL
+            let cbtStr = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0";
+            let hntStr = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)') || "0";
+            sumCBTNoTrans += parseFloat(String(cbtStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
+            sumHandledNoTrans += parseFloat(String(hntStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
         });
 
         const ahtTotal = sumHandled > 0 ? (sumCalcAHT / sumHandled) : 0;
         const fcrTotal = sumFCRReplies > 0 ? (sumFCRPos / sumFCRReplies) : 0;
         const csatTotal = sumCSATReplies > 0 ? (sumCSATPos / sumCSATReplies) : 0;
+        
+        // El Ratio Total se calcula sumando TODOS los CBT y dividiendo entre TODOS los Handled No Trans
         const ratioTotal = sumHandledNoTrans > 0 ? (sumCBTNoTrans / sumHandledNoTrans) : 0;
 
         const container = document.getElementById('totales-cards');
@@ -326,12 +315,17 @@ sumHandledNoTrans += parseFloat(String(hntStr).replace('%', '').replace('.', '')
             
             const fcrVal = getVal(row, '% IVR FCR');
             const csatVal = getVal(row, '% IVR CSAT');
-            const ratioVal = getVal(row, '% RATIO (CBT/HANDLED)');
             
-            // AQUI ESTA EL TRUCO: Si el valor no existe, mostramos '-'
+            // AQUI ESTA LA MAGIA PARA EL RATIO DIARIO
+            let cbtDia = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0";
+            let hntDia = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)') || "0";
+            let numCBT = parseFloat(String(cbtDia).replace('%', '').replace('.', '').replace(',', '.')) || 0;
+            let numHNT = parseFloat(String(hntDia).replace('%', '').replace('.', '').replace(',', '.')) || 0;
+            let calcRatioDia = numHNT > 0 ? (numCBT / numHNT) : 0;
+
             const fcrRow = fcrVal ? (parseNumeroExcel(fcrVal) * 100).toFixed(1) + '%' : '-';
             const csatRow = csatVal ? (parseNumeroExcel(csatVal) * 100).toFixed(1) + '%' : '-';
-            const ratioRow = ratioVal ? (parseNumeroExcel(ratioVal) * 100).toFixed(1) + '%' : (row['% RATIO (CBT/HANDLED)'] ? row['% RATIO (CBT/HANDLED)'] : '-');
+            const ratioRow = numHNT > 0 ? (calcRatioDia * 100).toFixed(1) + '%' : '-';
             const ahtRow = getVal(row, 'AHT (S)') ? parseNumeroExcel(getVal(row, 'AHT (S)')).toFixed(0) : '-';
             
             tr.innerHTML = `
