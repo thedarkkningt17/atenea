@@ -291,8 +291,8 @@
         const fcrTotal = sumFCRReplies > 0 ? (sumFCRPos / sumFCRReplies) : 0;
         const csatTotal = sumCSATReplies > 0 ? (sumCSATPos / sumCSATReplies) : 0;
         
-        // El Ratio Total se calcula sumando TODOS los CBT y dividiendo entre TODOS los Handled No Trans
-        const ratioTotal = sumHandledNoTrans > 0 ? (sumCBTNoTrans / sumHandledNoTrans) : 0;
+        // Leemos el ratio total directo del archivo TOTALES_AGENTE.csv
+        const ratioTotal = parseNumeroExcel(getVal(datosTotales.find(a => (getVal(a, 'Email_Key')||"").toLowerCase() === agenteLogueado), '%_Ratio_Total')) || 0;
 
         const container = document.getElementById('totales-cards');
         container.innerHTML = `
@@ -325,7 +325,9 @@
 
             const fcrRow = fcrVal ? (parseNumeroExcel(fcrVal) * 100).toFixed(1) + '%' : '-';
             const csatRow = csatVal ? (parseNumeroExcel(csatVal) * 100).toFixed(1) + '%' : '-';
-            const ratioRow = numHNT > 0 ? (calcRatioDia * 100).toFixed(1) + '%' : '-';
+            // Tomamos el % de ratio que ya viene calculado en el CSV, si existe
+            const ratioCSV = getVal(row, '% RATIO (CBT/HANDLED)');
+            const ratioRow = ratioCSV ? (parseNumeroExcel(ratioCSV) * 100).toFixed(1) + '%' : '-';
             const ahtRow = getVal(row, 'AHT (S)') ? parseNumeroExcel(getVal(row, 'AHT (S)')).toFixed(0) : '-';
             
             tr.innerHTML = `
