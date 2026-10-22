@@ -219,6 +219,11 @@
             .dashboard-header { flex-direction: column; align-items: flex-start; gap: 12px; }
             .charts-grid { grid-template-columns: 1fr; }
         }
+        /* Estilos para los iconos de tendencia */
+.trend-icon { font-size: 16px; margin-left: 8px; vertical-align: middle; }
+.trend-up { color: #10b981; }   /* Verde */
+.trend-mid { color: #f59e0b; }  /* Amarillo */
+.trend-down { color: #ef4444; } /* Rojo */
     </style>
 </head>
 <body>
@@ -371,7 +376,35 @@
         let num = parseFloat(str) || 0;
         return isPercent ? num / 100 : num;
     }
-
+    // Función para generar las flechas según tus reglas
+    function getTrendIcon(kpi, valor) {
+        let html = '';
+        if (kpi === 'AHT') {
+            // Menor es mejor
+            if (valor >= 280) html = '<span class="trend-icon trend-down" title="Alerta (>= 280s)">⬇️</span>';
+            else if (valor >= 270) html = '<span class="trend-icon trend-mid" title="En meta (270-279s)">➡️</span>';
+            else html = '<span class="trend-icon trend-up" title="Excelente (< 270s)">⬆️</span>';
+        } 
+        else if (kpi === 'FCR') { // Asumiendo que aplica para FCR y CSAT
+            // Mayor es mejor
+            if (valor >= 0.87) html = '<span class="trend-icon trend-up" title="Excelente (>= 87%)">⬆️</span>';
+            else if (valor >= 0.82) html = '<span class="trend-icon trend-mid" title="En meta (82-86%)">➡️</span>';
+            else html = '<span class="trend-icon trend-down" title="Alerta (< 82%)">⬇️</span>';
+        }
+        else if (kpi === 'CSAT') {
+            // Mayor es mejor
+            if (valor >= 0.76) html = '<span class="trend-icon trend-up" title="Excelente (>= 76%)">⬆️</span>';
+            else if (valor >= 0.71) html = '<span class="trend-icon trend-mid" title="En meta (71-75%)">➡️</span>';
+            else html = '<span class="trend-icon trend-down" title="Alerta (< 71%)">⬇️</span>';
+        }
+        else if (kpi === 'RATIO') {
+            // Menor es mejor (CBT)
+            if (valor >= 0.76) html = '<span class="trend-icon trend-down" title="Alerta (>= 76%)">⬇️</span>';
+            else if (valor >= 0.71) html = '<span class="trend-icon trend-mid" title="En meta (71-75%)">➡️</span>';
+            else html = '<span class="trend-icon trend-up" title="Excelente (< 71%)">⬆️</span>';
+        }
+        return html;
+    }
     function formatearFechaParaInput(fechaStr) {
         if(!fechaStr) return '';
         let f = fechaStr.split(' ')[0];
@@ -533,28 +566,28 @@
                     <h3>AHT Promedio</h3>
                     <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
                 </div>
-                <p>${ahtTotal.toFixed(2)}<span>s</span></p>
+                <p>${ahtTotal.toFixed(2)}<span>s</span> ${getTrendIcon('AHT', ahtTotal)}</p>
             </div>
             <div class="card green">
                 <div class="card-top">
                     <h3>% FCR</h3>
                     <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
                 </div>
-                <p>${(fcrTotal * 100).toFixed(2)}<span>%</span></p>
+                <p>${(fcrTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('FCR', fcrTotal)}</p>
             </div>
             <div class="card purple">
                 <div class="card-top">
                     <h3>% CSAT</h3>
                     <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
                 </div>
-                <p>${(csatTotal * 100).toFixed(2)}<span>%</span></p>
+                <p>${(csatTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('CSAT', csatTotal)}</p>
             </div>
             <div class="card orange">
                 <div class="card-top">
                     <h3>% Ratio (CBT)</h3>
                     <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg></div>
                 </div>
-                <p>${(ratioTotal * 100).toFixed(2)}<span>%</span></p>
+                <p>${(ratioTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('RATIO', ratioTotal)}</p>
             </div>
         `;
 
@@ -619,10 +652,19 @@
 
         let sumFCR = 0, sumCSAT = 0, sumCBT = 0;
         datosAgenteFiltrados.forEach(row => {
-            sumFCR  += parseNumeroExcel(getVal(row, 'IVR FCR POSITIVE'));
-            sumCSAT += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
-            const cbt = parseNumeroExcel(getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)'));
-            sumCBT += cbt;
+                        // Convertimos a números para evaluar las flechas
+            const fcrNum = parseNumeroExcel(fcrVal);
+            const csatNum = parseNumeroExcel(csatVal);
+            const ahtNum = parseNumeroExcel(getVal(row, 'AHT (S)'));
+
+            tr.innerHTML = `
+                <td>${fechaMostrar}</td>
+                <td>${getVal(row, 'HANDLED INBOUND') || 0}</td>
+                <td>${ahtRow} ${getTrendIcon('AHT', ahtNum)}</td>
+                <td>${fcrRow} ${fcrVal ? getTrendIcon('FCR', fcrNum) : ''}</td>
+                <td>${csatRow} ${csatVal ? getTrendIcon('CSAT', csatNum) : ''}</td>
+                <td>${ratioRow} ${numHNT > 0 ? getTrendIcon('RATIO', calcRatioDia) : ''}</td>
+            `;
         });
 
         if (chartEvolucion) chartEvolucion.destroy();
