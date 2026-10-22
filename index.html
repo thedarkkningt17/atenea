@@ -356,20 +356,16 @@
     let chartEvolucion = null;
     let chartCalidad = null;
 
-    // FUNCIÓN MEJORADA: Maneja formatos como "389,15", "77,05%", "1.250,50", etc.
     function parseNumeroExcel(val) {
         if (!val) return 0;
         let str = String(val).trim();
-        
-        // Si es un porcentaje, lo dividimos entre 100
         let isPercent = str.includes('%');
         str = str.replace('%', '').trim();
         
-        // Lógica para separar miles y decimales (formato español: 1.250,50)
         if (str.includes('.') && str.includes(',')) {
-            str = str.replace(/\./g, '').replace(',', '.'); // Quitar puntos de miles, cambiar coma por punto
+            str = str.replace(/\./g, '').replace(',', '.');
         } else if (str.includes(',')) {
-            str = str.replace(',', '.'); // Cambiar coma por punto
+            str = str.replace(',', '.');
         }
         
         let num = parseFloat(str) || 0;
@@ -460,7 +456,6 @@
             document.getElementById('logout-btn').classList.remove('hidden');
             document.getElementById('user-chip').classList.remove('hidden');
 
-            // CORRECCIÓN AQUÍ: Busca "Agentes.NOMBRE COMPLETO"
             let nombre = getVal(agenteTotal, 'Agentes.NOMBRE COMPLETO') || "Agente";
             document.getElementById('agent-name').innerText = "Hola, " + nombre;
             document.getElementById('header-user-name').innerText = nombre;
@@ -504,6 +499,13 @@
 
         if(!inicio || !fin) return;
 
+        // 1. Buscamos los totales precalculados por Power Query
+        const agenteTotal = datosTotales.find(a => {
+            let e = getVal(a, 'Email_Key');
+            return e && e.toLowerCase() === agenteLogueado;
+        });
+
+        // 2. Filtramos los datos diarios para la tabla y gráficas
         let filasFiltradas = datosBase.filter(row => {
             let e = getVal(row, 'Email_Key');
             if(!e || e.toLowerCase() !== agenteLogueado) return false;
@@ -518,35 +520,11 @@
             return false;
         });
 
-        let sumHandled = 0, sumCalcAHT = 0;
-        let sumFCRReplies = 0, sumFCRPos = 0;
-        let sumCSATReplies = 0, sumCSATPos = 0;
-        let sumCBTNoTrans = 0;
-        let sumHandledNoTrans = 0;
-
-        datosAgenteFiltrados.forEach(row => {
-            const h = parseNumeroExcel(getVal(row, 'HANDLED INBOUND'));
-            const aht = parseNumeroExcel(getVal(row, 'AHT (S)'));
-            sumHandled += h;
-            sumCalcAHT += (h * aht);
-
-            sumFCRReplies += parseNumeroExcel(getVal(row, 'IVR FCR REPLIES'));
-            sumFCRPos += parseNumeroExcel(getVal(row, 'IVR FCR POSITIVE'));
-            sumCSATReplies += parseNumeroExcel(getVal(row, 'IVR CSAT REPLIES'));
-            sumCSATPos += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
-
-            // CORRECCIÓN AQUÍ: Nombres exactos de las columnas con el prefijo "Encuestas."
-            let cbtStr = getVal(row, 'Encuestas.CALL BLIND TRANSFERS (NO TRANSFERS)');
-            let hntStr = getVal(row, 'Encuestas.HANDLED INBOUND (NO TRANSFERS)');
-            
-            sumCBTNoTrans += parseNumeroExcel(cbtStr);
-            sumHandledNoTrans += parseNumeroExcel(hntStr);
-        });
-
-        const ahtTotal = sumHandled > 0 ? (sumCalcAHT / sumHandled) : 0;
-        const fcrTotal = sumFCRReplies > 0 ? (sumFCRPos / sumFCRReplies) : 0;
-        const csatTotal = sumCSATReplies > 0 ? (sumCSATPos / sumCSATReplies) : 0;
-        const ratioTotal = sumHandledNoTrans > 0 ? (sumCBTNoTrans / sumHandledNoTrans) : 0;
+        // 3. Calculamos los valores para las tarjetas (Usando TOTALES_AGENTE)
+        const ahtTotal = parseNumeroExcel(getVal(agenteTotal, 'AHT_Total_S'));
+        const fcrTotal = parseNumeroExcel(getVal(agenteTotal, '%_FCR_Total'));
+        const csatTotal = parseNumeroExcel(getVal(agenteTotal, '%_CSAT_Total'));
+        const ratioTotal = parseNumeroExcel(getVal(agenteTotal, '%_Ratio_Total'));
 
         const container = document.getElementById('totales-cards');
         container.innerHTML = `
@@ -580,6 +558,7 @@
             </div>
         `;
 
+        // 4. Llenamos la tabla diaria
         const tbody = document.querySelector('#tabla-diaria tbody');
         tbody.innerHTML = '';
 
@@ -594,9 +573,8 @@
             const fcrVal = getVal(row, '% IVR FCR');
             const csatVal = getVal(row, '% IVR CSAT');
 
-            // CORRECCIÓN AQUÍ: Nombres exactos para la tabla
-            let cbtDia = getVal(row, 'Encuestas.CALL BLIND TRANSFERS (NO TRANSFERS)');
-            let hntDia = getVal(row, 'Encuestas.HANDLED INBOUND (NO TRANSFERS)');
+            let cbtDia = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)');
+            let hntDia = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)');
             let numCBT = parseNumeroExcel(cbtDia);
             let numHNT = parseNumeroExcel(hntDia);
             let calcRatioDia = numHNT > 0 ? (numCBT / numHNT) : 0;
@@ -619,6 +597,7 @@
 
         document.getElementById('table-count').innerText = datosAgenteFiltrados.length + ' registros';
 
+        // 5. Renderizamos las gráficas
         renderCharts();
     }
 
@@ -642,7 +621,7 @@
         datosAgenteFiltrados.forEach(row => {
             sumFCR  += parseNumeroExcel(getVal(row, 'IVR FCR POSITIVE'));
             sumCSAT += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
-            const cbt = parseNumeroExcel(getVal(row, 'Encuestas.CALL BLIND TRANSFERS (NO TRANSFERS)'));
+            const cbt = parseNumeroExcel(getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)'));
             sumCBT += cbt;
         });
 
