@@ -356,14 +356,24 @@
     let chartEvolucion = null;
     let chartCalidad = null;
 
+    // FUNCIÓN MEJORADA: Maneja formatos como "389,15", "77,05%", "1.250,50", etc.
     function parseNumeroExcel(val) {
         if (!val) return 0;
         let str = String(val).trim();
-        if (str.includes('%')) return parseFloat(str.replace('%', '').replace(',', '.')) / 100;
-        if (str.includes(',')) {
-            str = str.replace(/\./g, '').replace(',', '.');
+        
+        // Si es un porcentaje, lo dividimos entre 100
+        let isPercent = str.includes('%');
+        str = str.replace('%', '').trim();
+        
+        // Lógica para separar miles y decimales (formato español: 1.250,50)
+        if (str.includes('.') && str.includes(',')) {
+            str = str.replace(/\./g, '').replace(',', '.'); // Quitar puntos de miles, cambiar coma por punto
+        } else if (str.includes(',')) {
+            str = str.replace(',', '.'); // Cambiar coma por punto
         }
-        return parseFloat(str) || 0;
+        
+        let num = parseFloat(str) || 0;
+        return isPercent ? num / 100 : num;
     }
 
     function formatearFechaParaInput(fechaStr) {
@@ -450,7 +460,8 @@
             document.getElementById('logout-btn').classList.remove('hidden');
             document.getElementById('user-chip').classList.remove('hidden');
 
-            let nombre = getVal(agenteTotal, 'NOMBRE COMPLETO') || "Agente";
+            // CORRECCIÓN AQUÍ: Busca "Agentes.NOMBRE COMPLETO"
+            let nombre = getVal(agenteTotal, 'Agentes.NOMBRE COMPLETO') || "Agente";
             document.getElementById('agent-name').innerText = "Hola, " + nombre;
             document.getElementById('header-user-name').innerText = nombre;
             document.getElementById('header-user-email').innerText = email;
@@ -524,10 +535,12 @@
             sumCSATReplies += parseNumeroExcel(getVal(row, 'IVR CSAT REPLIES'));
             sumCSATPos += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
 
-            let cbtStr = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0";
-            let hntStr = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)') || "0";
-            sumCBTNoTrans += parseFloat(String(cbtStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
-            sumHandledNoTrans += parseFloat(String(hntStr).replace('%', '').replace('.', '').replace(',', '.')) || 0;
+            // CORRECCIÓN AQUÍ: Nombres exactos de las columnas con el prefijo "Encuestas."
+            let cbtStr = getVal(row, 'Encuestas.CALL BLIND TRANSFERS (NO TRANSFERS)');
+            let hntStr = getVal(row, 'Encuestas.HANDLED INBOUND (NO TRANSFERS)');
+            
+            sumCBTNoTrans += parseNumeroExcel(cbtStr);
+            sumHandledNoTrans += parseNumeroExcel(hntStr);
         });
 
         const ahtTotal = sumHandled > 0 ? (sumCalcAHT / sumHandled) : 0;
@@ -581,10 +594,11 @@
             const fcrVal = getVal(row, '% IVR FCR');
             const csatVal = getVal(row, '% IVR CSAT');
 
-            let cbtDia = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0";
-            let hntDia = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)') || "0";
-            let numCBT = parseFloat(String(cbtDia).replace('%', '').replace('.', '').replace(',', '.')) || 0;
-            let numHNT = parseFloat(String(hntDia).replace('%', '').replace('.', '').replace(',', '.')) || 0;
+            // CORRECCIÓN AQUÍ: Nombres exactos para la tabla
+            let cbtDia = getVal(row, 'Encuestas.CALL BLIND TRANSFERS (NO TRANSFERS)');
+            let hntDia = getVal(row, 'Encuestas.HANDLED INBOUND (NO TRANSFERS)');
+            let numCBT = parseNumeroExcel(cbtDia);
+            let numHNT = parseNumeroExcel(hntDia);
             let calcRatioDia = numHNT > 0 ? (numCBT / numHNT) : 0;
 
             const fcrRow = fcrVal ? (parseNumeroExcel(fcrVal) * 100).toFixed(1) + '%' : '-';
@@ -628,7 +642,7 @@
         datosAgenteFiltrados.forEach(row => {
             sumFCR  += parseNumeroExcel(getVal(row, 'IVR FCR POSITIVE'));
             sumCSAT += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
-            const cbt = parseFloat(String(getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)') || "0").replace('%','').replace('.','').replace(',','.')) || 0;
+            const cbt = parseNumeroExcel(getVal(row, 'Encuestas.CALL BLIND TRANSFERS (NO TRANSFERS)'));
             sumCBT += cbt;
         });
 
