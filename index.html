@@ -12,7 +12,7 @@
             --primary-color: #d81b60;
             --primary-dark: #ad1457;
             --primary-light: #fce4ec;
-            --bg-color: #e2e8f0; /* Fondo gris un poquito más oscuro */
+            --bg-color: #e2e8f0;
             --surface-color: #ffffff;
             --sidebar-bg: #1e293b;
             --sidebar-hover: #334155;
@@ -26,7 +26,7 @@
             --purple: #8b5cf6;
             --shadow-sm: 0 1px 3px rgba(16,24,40,0.08);
             --shadow-md: 0 4px 8px -1px rgba(16,24,40,0.1), 0 2px 4px -2px rgba(16,24,40,0.06);
-            --shadow-lg: 0 20px 25px -5px rgba(16,24,40,0.1), 0 8px 10px -6px rgba(16,24,40,0.05);
+            --shadow-lg: 0 25px 30px -5px rgba(16,24,40,0.15), 0 10px 15px -6px rgba(16,24,40,0.08); /* Sombra más pronunciada */
             --radius: 12px;
             --radius-sm: 8px;
         }
@@ -81,36 +81,51 @@
         /* ---------- CONTAINER ---------- */
         .container { padding: 28px 32px 40px; flex: 1; }
 
-        /* ---------- LOGIN ---------- */
+        /* ---------- LOGIN VERTICAL Y ESTILIZADO ---------- */
         .login-box {
-            background: var(--surface-color); max-width: 460px; margin: 60px auto; padding: 50px 48px;
-            border-radius: var(--radius); box-shadow: var(--shadow-lg); text-align: center; position: relative; overflow: hidden;
+            background: var(--surface-color); 
+            max-width: 380px; /* Más angosto (vertical) */
+            margin: 50px auto; 
+            padding: 60px 48px; /* Más alto (padding) */
+            border-radius: 20px; /* Bordes más redondeados */
+            box-shadow: var(--shadow-lg); 
+            text-align: center; 
+            position: relative; 
+            overflow: hidden;
         }
-        .login-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: linear-gradient(90deg, var(--primary-color), #ff6b9d); }
+        .login-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--primary-color), #ff6b9d); }
+        
         .login-box .login-icon {
-            width: 68px; height: 68px; border-radius: 50%; background: var(--primary-light);
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: var(--primary-color);
+            width: 80px; height: 80px; border-radius: 50%; background: var(--primary-light);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; color: var(--primary-color);
+            box-shadow: 0 4px 15px rgba(216,27,96,0.15);
         }
-        .login-box h2 { font-size: 24px; margin-bottom: 8px; font-weight: 800; letter-spacing: -0.5px; }
-        .login-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 28px; line-height: 1.5; }
+        .login-box h2 { font-size: 26px; margin-bottom: 12px; font-weight: 800; letter-spacing: -0.5px; }
+        .login-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 32px; line-height: 1.6; }
 
         input[type="email"], input[type="date"] {
-            width: 100%; padding: 14px 16px; margin-bottom: 16px; border: 1px solid var(--border-color);
-            border-radius: var(--radius-sm); font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 500;
-            background: #f8fafc; transition: all .15s;
+            width: 100%; padding: 16px 18px; margin-bottom: 20px; border: 1px solid var(--border-color);
+            border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 500;
+            background: #f8fafc; transition: all .2s; text-align: center; /* Texto centrado para el login */
         }
-        input[type="email"]:focus, input[type="date"]:focus { outline: none; border-color: var(--primary-color); background: #fff; box-shadow: 0 0 0 4px rgba(216,27,96,0.1); }
+        input[type="email"]:focus, input[type="date"]:focus { 
+            outline: none; border-color: var(--primary-color); background: #fff; 
+            box-shadow: 0 0 0 4px rgba(216,27,96,0.1); transform: translateY(-1px);
+        }
+        
         button {
-            background-color: var(--primary-color); color: white; border: none; padding: 14px 20px;
-            font-size: 14px; font-weight: 700; border-radius: var(--radius-sm); cursor: pointer;
-            font-family: 'Inter', sans-serif; width: 100%; transition: all .15s; letter-spacing: 0.3px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); 
+            color: white; border: none; padding: 16px 20px;
+            font-size: 15px; font-weight: 700; border-radius: 12px; cursor: pointer;
+            font-family: 'Inter', sans-serif; width: 100%; transition: all .2s; letter-spacing: 0.5px;
         }
-        button:hover { background-color: var(--primary-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(216,27,96,.25); }
-        .btn-secondary { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); width: auto; padding: 10px 16px; font-weight: 600; }
+        button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(216,27,96,.3); }
+        
+        .btn-secondary { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); width: auto; padding: 10px 16px; font-weight: 600; border-radius: 8px; }
         .btn-secondary:hover { background: #f9fafb; color: var(--text-main); box-shadow: var(--shadow-sm); transform: none; }
         .btn-logout {
             background: #fff; color: #ef4444; border: 1px solid #fecaca; padding: 8px 16px;
-            font-size: 13px; width: auto; font-weight: 600;
+            font-size: 13px; width: auto; font-weight: 600; border-radius: 8px;
         }
         .btn-logout:hover { background: #fef2f2; transform: none; box-shadow: none; }
 
@@ -127,8 +142,8 @@
             display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
         }
         .filter-box .filter-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
-        .filter-box input { width: auto; margin-bottom: 0; padding: 10px 14px; font-size: 13px; background: #fff; font-weight: 500; }
-        .filter-box button { width: auto; padding: 10px 18px; font-size: 13px; }
+        .filter-box input { width: auto; margin-bottom: 0; padding: 10px 14px; font-size: 13px; background: #fff; font-weight: 500; text-align: left; }
+        .filter-box button { width: auto; padding: 10px 18px; font-size: 13px; border-radius: 8px; }
         .filter-divider { color: var(--text-muted); font-size: 13px; }
 
         /* ---------- KPI CARDS ---------- */
@@ -218,11 +233,11 @@
             border-radius: 50%;
             margin-left: 8px;
             vertical-align: middle;
-            box-shadow: 0 0 0 2px rgba(0,0,0,0.05); /* Un pequeño borde para que resalte */
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
         }
-        .dot-green { background-color: #10b981; }  /* Verde */
-        .dot-yellow { background-color: #f59e0b; } /* Amarillo */
-        .dot-red { background-color: #ef4444; }    /* Rojo */
+        .dot-green { background-color: #10b981; }
+        .dot-yellow { background-color: #f59e0b; }
+        .dot-red { background-color: #ef4444; }
 
         @media (max-width: 900px) {
             .sidebar { transform: translateX(-100%); }
@@ -231,7 +246,7 @@
             .app-header { padding: 14px 16px; }
             .dashboard-header { flex-direction: column; align-items: flex-start; gap: 12px; }
             .charts-grid { grid-template-columns: 1fr; }
-            .login-box { padding: 40px 24px; margin: 40px 16px; }
+            .login-box { padding: 40px 24px; margin: 30px 16px; max-width: 100%; }
         }
     </style>
 </head>
@@ -279,11 +294,10 @@
             <!-- LOGIN -->
             <div id="login-section" class="login-box">
                 <div class="login-icon">
-                    <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 </div>
                 <h2>Bienvenido</h2>
                 <p>Ingresa tu correo corporativo para acceder a tus métricas de rendimiento.</p>
-                <!-- Añadido el evento onkeydown para detectar el Enter -->
                 <input type="email" id="email-input" placeholder="nombre.apellido@mediamarkt.es" onkeydown="if(event.key === 'Enter') login()">
                 <button onclick="login()">Iniciar Sesión</button>
                 <div id="error-msg"></div>
@@ -387,7 +401,6 @@
         return isPercent ? num / 100 : num;
     }
 
-    // Función para generar el semáforo según tus reglas
     function getTrendIcon(kpi, valor) {
         let html = '';
         if (kpi === 'AHT') {
@@ -406,7 +419,6 @@
             else html = '<span class="status-dot dot-red" title="Alerta (< 74%)"></span>';
         }
         else if (kpi === 'RATIO') {
-            // MAYOR ES MEJOR
             if (valor >= 0.76) html = '<span class="status-dot dot-green" title="Excelente (>= 76%)"></span>';
             else if (valor >= 0.71) html = '<span class="status-dot dot-yellow" title="En meta (71-75%)"></span>';
             else html = '<span class="status-dot dot-red" title="Alerta (< 71%)"></span>';
