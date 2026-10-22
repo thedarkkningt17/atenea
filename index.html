@@ -6,7 +6,6 @@
     <title>Team Adrian | Portal de Agentes</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23d81b60'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' font-family='Arial, sans-serif' font-size='50' font-weight='bold' fill='white'>TA</text></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Chart.js local (súbelo a la raíz del repo como chart.js) -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         :root {
@@ -211,11 +210,19 @@
         #error-msg { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-top: 14px; display: none; text-align: left; }
         .hidden { display: none !important; }
 
-        /* Estilos para los iconos de tendencia */
-        .trend-icon { font-size: 16px; margin-left: 6px; vertical-align: middle; }
-        .trend-up { color: #10b981; }   /* Verde */
-        .trend-mid { color: #f59e0b; }  /* Amarillo */
-        .trend-down { color: #ef4444; } /* Rojo */
+        /* Estilos para los puntos del semáforo */
+        .status-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 8px;
+            vertical-align: middle;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.05); /* Un pequeño borde para que resalte */
+        }
+        .dot-green { background-color: #10b981; }  /* Verde */
+        .dot-yellow { background-color: #f59e0b; } /* Amarillo */
+        .dot-red { background-color: #ef4444; }    /* Rojo */
 
         @media (max-width: 900px) {
             .sidebar { transform: translateX(-100%); }
@@ -378,28 +385,29 @@
         return isPercent ? num / 100 : num;
     }
 
-    // Función para generar las flechas según tus reglas
+    // Función para generar el semáforo según tus reglas
     function getTrendIcon(kpi, valor) {
         let html = '';
         if (kpi === 'AHT') {
-            if (valor >= 280) html = '<span class="trend-icon trend-down" title="Alerta (>= 280s)">⬇️</span>';
-            else if (valor >= 270) html = '<span class="trend-icon trend-mid" title="En meta (270-279s)">➡️</span>';
-            else html = '<span class="trend-icon trend-up" title="Excelente (< 270s)">⬆️</span>';
+            if (valor >= 280) html = '<span class="status-dot dot-red" title="Alerta (>= 280s)"></span>';
+            else if (valor >= 270) html = '<span class="status-dot dot-yellow" title="En meta (270-279s)"></span>';
+            else html = '<span class="status-dot dot-green" title="Excelente (< 270s)"></span>';
         } 
         else if (kpi === 'FCR') {
-            if (valor >= 0.87) html = '<span class="trend-icon trend-up" title="Excelente (>= 87%)">⬆️</span>';
-            else if (valor >= 0.82) html = '<span class="trend-icon trend-mid" title="En meta (82-86%)">➡️</span>';
-            else html = '<span class="trend-icon trend-down" title="Alerta (< 82%)">⬇️</span>';
+            if (valor >= 0.87) html = '<span class="status-dot dot-green" title="Excelente (>= 87%)"></span>';
+            else if (valor >= 0.82) html = '<span class="status-dot dot-yellow" title="En meta (82-86%)"></span>';
+            else html = '<span class="status-dot dot-red" title="Alerta (< 82%)"></span>';
         }
         else if (kpi === 'CSAT') {
-            if (valor >= 0.76) html = '<span class="trend-icon trend-up" title="Excelente (>= 76%)">⬆️</span>';
-            else if (valor >= 0.71) html = '<span class="trend-icon trend-mid" title="En meta (71-75%)">➡️</span>';
-            else html = '<span class="trend-icon trend-down" title="Alerta (< 71%)">⬇️</span>';
+            if (valor >= 0.76) html = '<span class="status-dot dot-green" title="Excelente (>= 76%)"></span>';
+            else if (valor >= 0.71) html = '<span class="status-dot dot-yellow" title="En meta (71-75%)"></span>';
+            else html = '<span class="status-dot dot-red" title="Alerta (< 71%)"></span>';
         }
         else if (kpi === 'RATIO') {
-            if (valor >= 0.76) html = '<span class="trend-icon trend-down" title="Alerta (>= 76%)">⬇️</span>';
-            else if (valor >= 0.71) html = '<span class="trend-icon trend-mid" title="En meta (71-75%)">➡️</span>';
-            else html = '<span class="trend-icon trend-up" title="Excelente (< 71%)">⬆️</span>';
+            // MAYOR ES MEJOR (Corregido)
+            if (valor >= 0.76) html = '<span class="status-dot dot-green" title="Excelente (>= 76%)"></span>';
+            else if (valor >= 0.71) html = '<span class="status-dot dot-yellow" title="En meta (71-75%)"></span>';
+            else html = '<span class="status-dot dot-red" title="Alerta (< 71%)"></span>';
         }
         return html;
     }
