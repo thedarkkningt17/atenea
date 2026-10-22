@@ -399,12 +399,13 @@
             else html = '<span class="status-dot dot-red" title="Alerta (< 82%)"></span>';
         }
         else if (kpi === 'CSAT') {
-            if (valor >= 0.76) html = '<span class="status-dot dot-green" title="Excelente (>= 76%)"></span>';
-            else if (valor >= 0.71) html = '<span class="status-dot dot-yellow" title="En meta (71-75%)"></span>';
-            else html = '<span class="status-dot dot-red" title="Alerta (< 71%)"></span>';
+            // Regla actualizada (>= 86% verde, >= 74% amarillo)
+            if (valor >= 0.86) html = '<span class="status-dot dot-green" title="Excelente (>= 86%)"></span>';
+            else if (valor >= 0.74) html = '<span class="status-dot dot-yellow" title="En meta (74-85%)"></span>';
+            else html = '<span class="status-dot dot-red" title="Alerta (< 74%)"></span>';
         }
         else if (kpi === 'RATIO') {
-            // MAYOR ES MEJOR (Corregido)
+            // MAYOR ES MEJOR
             if (valor >= 0.76) html = '<span class="status-dot dot-green" title="Excelente (>= 76%)"></span>';
             else if (valor >= 0.71) html = '<span class="status-dot dot-yellow" title="En meta (71-75%)"></span>';
             else html = '<span class="status-dot dot-red" title="Alerta (< 71%)"></span>';
