@@ -1,816 +1,1101 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Team Adrian | Portal de Agentes</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23d81b60'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' font-family='Arial, sans-serif' font-size='50' font-weight='bold' fill='white'>TA</text></svg>">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <style>
-        :root {
-            --primary-color: #d81b60;
-            --primary-dark: #ad1457;
-            --primary-light: #fce4ec;
-            --bg-color: #e2e8f0;
-            --surface-color: #ffffff;
-            --sidebar-bg: #1e293b;
-            --sidebar-hover: #334155;
-            --text-main: #1f2937;
-            --text-muted: #64748b;
-            --text-light: #94a3b8;
-            --border-color: #cbd5e1;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --info: #3b82f6;
-            --purple: #8b5cf6;
-            --shadow-sm: 0 1px 3px rgba(16,24,40,0.08);
-            --shadow-md: 0 4px 8px -1px rgba(16,24,40,0.1), 0 2px 4px -2px rgba(16,24,40,0.06);
-            --shadow-lg: 0 25px 30px -5px rgba(16,24,40,0.15), 0 10px 15px -6px rgba(16,24,40,0.08); /* Sombra más pronunciada */
-            --radius: 12px;
-            --radius-sm: 8px;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { height: 100%; }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Adrian | Portal de Agentes</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23DF0000'/%3E%3Ctext x='50' y='66' font-family='Montserrat,Arial,sans-serif' font-size='38' font-weight='900' fill='white' text-anchor='middle' letter-spacing='-2'%3EMA%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-        /* ---------- SIDEBAR ---------- */
-        .sidebar {
-            width: 240px; background: var(--sidebar-bg); color: #cbd5e1;
-            display: flex; flex-direction: column; padding: 20px 0;
-            position: fixed; top: 0; left: 0; bottom: 0; z-index: 20;
-        }
-        .sidebar-brand { padding: 0 22px 24px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #334155; margin-bottom: 20px; }
-        .sidebar-brand .logo-mark {
-            width: 36px; height: 36px; border-radius: 9px; background: var(--primary-color);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; color: white; font-size: 15px; letter-spacing: .5px;
-            box-shadow: 0 0 0 4px rgba(216,27,96,.18);
-        }
-        .sidebar-brand .brand-text { display: flex; flex-direction: column; line-height: 1.15; }
-        .sidebar-brand .brand-text strong { color: #fff; font-size: 15px; font-weight: 800; letter-spacing: -0.5px; }
-        .sidebar-brand .brand-text span { color: var(--text-light); font-size: 11px; letter-spacing: .4px; }
-        .nav-section { padding: 0 12px; }
-        .nav-section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #64748b; padding: 0 12px 10px; font-weight: 700; }
-        .nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 8px; color: #cbd5e1; font-size: 13.5px; font-weight: 500; cursor: pointer; margin-bottom: 2px; transition: all .15s; }
-        .nav-item:hover { background: var(--sidebar-hover); color: #fff; }
-        .nav-item.active { background: var(--primary-color); color: #fff; box-shadow: 0 2px 8px rgba(216,27,96,.35); }
-        .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
-        .sidebar-footer { margin-top: auto; padding: 16px 20px; font-size: 11px; color: #64748b; border-top: 1px solid #334155; }
+:root{
+  --mm-red:#DF0000; --mm-red-dark:#B00000; --mm-red-soft:#FFF0F0;
+  --mm-ink:#1A1A1A; --mm-ink-soft:#3A3A3A;
+  --mm-gray:#6B6B6B; --mm-gray-light:#9A9A9A;
+  --mm-line:#E6E8EC; --mm-bg:#F7F8FA;
+  --radius:12px; --radius-lg:16px;
+  --sidebar-w:260px; --sidebar-w-collapsed:76px;
+  --shadow-sm:0 1px 2px rgba(16,24,40,.05);
+  --shadow-md:0 4px 12px rgba(16,24,40,.08);
+  --shadow-lg:0 12px 32px rgba(16,24,40,.12);
+  --transition:.22s cubic-bezier(.4,0,.2,1);
+  --success:#10b981; --warning:#f59e0b; --danger:#ef4444;
+  --info:#3b82f6; --purple:#8b5cf6;
+}
 
-        /* ---------- MAIN ---------- */
-        .main-wrapper { margin-left: 240px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
-        .app-header {
-            background: var(--surface-color); padding: 16px 32px;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10;
-        }
-        .header-left h1 { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
-        .header-left .breadcrumb { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-        .header-left .breadcrumb span.current { color: var(--primary-color); font-weight: 600; }
-        .header-right { display: flex; align-items: center; gap: 16px; }
-        .user-chip { display: flex; align-items: center; gap: 10px; }
-        .user-avatar {
-            width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-color), #ff6b9d);
-            color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;
-        }
-        .user-meta { display: flex; flex-direction: column; line-height: 1.2; }
-        .user-meta strong { font-size: 13px; }
-        .user-meta small { font-size: 11px; color: var(--text-muted); }
+body{
+  font-family:'Montserrat',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--mm-bg); color:var(--mm-ink); line-height:1.55;
+  -webkit-font-smoothing:antialiased; min-height:100vh;
+}
+a{color:inherit}
+button{font-family:inherit}
 
-        /* ---------- CONTAINER ---------- */
-        .container { padding: 28px 32px 40px; flex: 1; }
+.app{display:flex;min-height:100vh;}
 
-        /* ---------- LOGIN VERTICAL Y ESTILIZADO ---------- */
-        .login-box {
-            background: var(--surface-color); 
-            max-width: 380px; /* Más angosto (vertical) */
-            margin: 50px auto; 
-            padding: 60px 48px; /* Más alto (padding) */
-            border-radius: 20px; /* Bordes más redondeados */
-            box-shadow: var(--shadow-lg); 
-            text-align: center; 
-            position: relative; 
-            overflow: hidden;
-        }
-        .login-box::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: linear-gradient(90deg, var(--primary-color), #ff6b9d); }
-        
-        .login-box .login-icon {
-            width: 80px; height: 80px; border-radius: 50%; background: var(--primary-light);
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 24px; color: var(--primary-color);
-            box-shadow: 0 4px 15px rgba(216,27,96,0.15);
-        }
-        .login-box h2 { font-size: 26px; margin-bottom: 12px; font-weight: 800; letter-spacing: -0.5px; }
-        .login-box p { color: var(--text-muted); font-size: 14px; margin-bottom: 32px; line-height: 1.6; }
+/* ============ SIDEBAR ============ */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;
+  width:var(--sidebar-w);background:#fff;
+  border-right:1px solid var(--mm-line);
+  display:flex;flex-direction:column;z-index:200;
+  transition:width var(--transition),transform var(--transition);
+  overflow:hidden;
+}
+.sidebar__brand{
+  display:flex;align-items:center;gap:12px;
+  padding:20px 20px 18px;border-bottom:1px solid var(--mm-line);flex-shrink:0;
+  text-decoration:none;
+}
+.sidebar__logo{
+  width:38px;height:38px;border-radius:10px;background:var(--mm-red);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:16px;letter-spacing:-1px;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(223,0,0,.28);
+}
+.sidebar__title{display:flex;flex-direction:column;min-width:0;transition:opacity var(--transition);}
+.sidebar__title strong{font-size:15px;font-weight:800;letter-spacing:-.3px;color:var(--mm-ink);white-space:nowrap;}
+.sidebar__title span{font-size:10.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--mm-gray-light);white-space:nowrap;}
+.sidebar__nav{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
+.sidebar__label{
+  font-size:10px;font-weight:800;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--mm-gray-light);
+  padding:12px 12px 6px;white-space:nowrap;transition:opacity var(--transition);
+}
+.sidebar__link{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 12px;border-radius:10px;font-size:13.5px;font-weight:600;
+  color:var(--mm-ink-soft);cursor:pointer;text-decoration:none;
+  transition:background var(--transition),color var(--transition);
+  white-space:nowrap;position:relative;border:none;background:transparent;
+  text-align:left;width:100%;
+}
+.sidebar__link:hover{background:#F2F3F5;color:var(--mm-ink)}
+.sidebar__link.is-active{background:var(--mm-red-soft);color:var(--mm-red);font-weight:800;}
+.sidebar__link.is-active::before{
+  content:"";position:absolute;left:-12px;top:50%;transform:translateY(-50%);
+  width:4px;height:22px;border-radius:0 3px 3px 0;background:var(--mm-red);
+}
+.sidebar__icon{width:20px;height:20px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.sidebar__icon svg{width:18px;height:18px;fill:currentColor}
+.sidebar__icon svg.stroke{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sidebar__text{flex:1;overflow:hidden;text-overflow:ellipsis;transition:opacity var(--transition);}
+.sidebar__badge{
+  font-size:10px;font-weight:800;letter-spacing:.4px;
+  padding:2px 7px;border-radius:999px;background:var(--mm-red);color:#fff;flex-shrink:0;
+}
+.sidebar__footer{
+  padding:14px 16px;border-top:1px solid var(--mm-line);
+  font-size:11px;font-weight:600;color:var(--mm-gray-light);
+  white-space:nowrap;transition:opacity var(--transition);flex-shrink:0;
+}
+.sidebar__footer strong{color:var(--mm-ink);font-weight:800;display:block;font-size:11.5px}
+.sidebar__collapse{
+  position:absolute;top:74px;right:-13px;
+  width:26px;height:26px;border-radius:50%;
+  background:#fff;border:1px solid var(--mm-line);color:var(--mm-gray);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  box-shadow:var(--shadow-sm);
+  transition:background var(--transition),color var(--transition);z-index:2;
+}
+.sidebar__collapse:hover{background:var(--mm-red);color:#fff;border-color:var(--mm-red)}
+.sidebar__collapse svg{width:12px;height:12px;transition:transform var(--transition)}
 
-        input[type="email"], input[type="date"] {
-            width: 100%; padding: 16px 18px; margin-bottom: 20px; border: 1px solid var(--border-color);
-            border-radius: 12px; font-size: 15px; font-family: 'Inter', sans-serif; font-weight: 500;
-            background: #f8fafc; transition: all .2s; text-align: center; /* Texto centrado para el login */
-        }
-        input[type="email"]:focus, input[type="date"]:focus { 
-            outline: none; border-color: var(--primary-color); background: #fff; 
-            box-shadow: 0 0 0 4px rgba(216,27,96,0.1); transform: translateY(-1px);
-        }
-        
-        button {
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)); 
-            color: white; border: none; padding: 16px 20px;
-            font-size: 15px; font-weight: 700; border-radius: 12px; cursor: pointer;
-            font-family: 'Inter', sans-serif; width: 100%; transition: all .2s; letter-spacing: 0.5px;
-        }
-        button:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(216,27,96,.3); }
-        
-        .btn-secondary { background: #fff; color: var(--text-main); border: 1px solid var(--border-color); width: auto; padding: 10px 16px; font-weight: 600; border-radius: 8px; }
-        .btn-secondary:hover { background: #f9fafb; color: var(--text-main); box-shadow: var(--shadow-sm); transform: none; }
-        .btn-logout {
-            background: #fff; color: #ef4444; border: 1px solid #fecaca; padding: 8px 16px;
-            font-size: 13px; width: auto; font-weight: 600; border-radius: 8px;
-        }
-        .btn-logout:hover { background: #fef2f2; transform: none; box-shadow: none; }
+.app.is-collapsed .sidebar{width:var(--sidebar-w-collapsed)}
+.app.is-collapsed .sidebar__title,
+.app.is-collapsed .sidebar__label,
+.app.is-collapsed .sidebar__text,
+.app.is-collapsed .sidebar__badge,
+.app.is-collapsed .sidebar__footer{opacity:0;pointer-events:none;width:0;overflow:hidden}
+.app.is-collapsed .sidebar__link{justify-content:center;padding:12px}
+.app.is-collapsed .sidebar__link.is-active::before{left:-8px}
+.app.is-collapsed .sidebar__collapse svg{transform:rotate(180deg)}
+.app.is-collapsed .main{margin-left:var(--sidebar-w-collapsed)}
 
-        /* ---------- DASHBOARD HEADER ---------- */
-        .dashboard-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; }
-        .dashboard-header h2 { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
-        .dashboard-header p { color: var(--text-muted); font-size: 14px; }
-        .page-tag { display: inline-flex; align-items: center; gap: 6px; background: var(--primary-light); color: var(--primary-dark); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+/* ============ MAIN ============ */
+.main{
+  flex:1;margin-left:var(--sidebar-w);min-height:100vh;
+  display:flex;flex-direction:column;
+  transition:margin-left var(--transition);min-width:0;
+}
+.topbar{
+  position:sticky;top:0;z-index:100;
+  background:rgba(255,255,255,.88);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--mm-line);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;padding:14px 28px;min-height:66px;
+}
+.topbar__left{display:flex;align-items:center;gap:14px;min-width:0}
+.topbar__hamburger{
+  display:none;width:38px;height:38px;border-radius:10px;
+  border:1px solid var(--mm-line);background:#fff;color:var(--mm-ink);
+  align-items:center;justify-content:center;cursor:pointer;
+  transition:background var(--transition),color var(--transition);
+}
+.topbar__hamburger:hover{background:var(--mm-red-soft);color:var(--mm-red);border-color:var(--mm-red)}
+.topbar__title{font-size:16px;font-weight:800;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topbar__title span{color:var(--mm-red)}
+.topbar__right{display:flex;align-items:center;gap:14px;flex-shrink:0}
+.topbar__date{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase;color:var(--mm-gray);white-space:nowrap;}
 
-        /* ---------- FILTERS ---------- */
-        .filter-box {
-            background: var(--surface-color); padding: 16px 20px; border-radius: var(--radius);
-            margin-bottom: 24px; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);
-            display: flex; align-items: center; flex-wrap: wrap; gap: 12px;
-        }
-        .filter-box .filter-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
-        .filter-box input { width: auto; margin-bottom: 0; padding: 10px 14px; font-size: 13px; background: #fff; font-weight: 500; text-align: left; }
-        .filter-box button { width: auto; padding: 10px 18px; font-size: 13px; border-radius: 8px; }
-        .filter-divider { color: var(--text-muted); font-size: 13px; }
+.user-chip{display:flex;align-items:center;gap:10px;}
+.user-avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--mm-red),#8E0000);
+  color:#fff;display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;font-weight:800;letter-spacing:-.3px;
+  box-shadow:0 4px 12px rgba(223,0,0,.25);
+}
+.user-meta{display:flex;flex-direction:column;line-height:1.2;}
+.user-meta strong{font-size:13px;font-weight:800;}
+.user-meta small{font-size:11px;color:var(--mm-gray);}
+.btn-logout{
+  background:#fff;color:var(--mm-red);border:1px solid #FAD4D4;
+  padding:8px 16px;font-size:12.5px;font-weight:700;border-radius:8px;cursor:pointer;
+  transition:all .15s;
+}
+.btn-logout:hover{background:var(--mm-red-soft);transform:translateY(-1px)}
 
-        /* ---------- KPI CARDS ---------- */
-        .cards-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; margin-bottom: 28px; }
-        .card {
-            background: var(--surface-color); padding: 20px; border-radius: var(--radius);
-            box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);
-            position: relative; overflow: hidden; transition: all .2s;
-        }
-        .card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
-        .card::after { content: ''; position: absolute; top: 0; left: 0; bottom: 0; width: 4px; background: var(--primary-color); }
-        .card .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px; }
-        .card h3 { font-size: 11.5px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing: .6px; margin: 0; }
-        .card .kpi-icon {
-            width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center;
-            background: var(--primary-light); color: var(--primary-color);
-        }
-        .card .kpi-icon svg { width: 18px; height: 18px; }
-        .card p { font-size: 32px; font-weight: 800; color: var(--text-main); line-height: 1; display: flex; align-items: baseline; gap: 4px; letter-spacing: -0.5px; }
-        .card p span { font-size: 16px; color: var(--text-muted); font-weight: 600; }
-        .card.blue::after { background: var(--info); } .card.blue .kpi-icon { background: #dbeafe; color: var(--info); }
-        .card.green::after { background: var(--success); } .card.green .kpi-icon { background: #d1fae5; color: var(--success); }
-        .card.purple::after { background: var(--purple); } .card.purple .kpi-icon { background: #ede9fe; color: var(--purple); }
-        .card.orange::after { background: var(--warning); } .card.orange .kpi-icon { background: #fef3c7; color: var(--warning); }
+.content{flex:1;padding:28px;width:100%;}
 
-        /* ---------- CHARTS ---------- */
-        .charts-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 18px;
-            margin-bottom: 28px;
-        }
-        .chart-card {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-        }
-        .chart-header {
-            padding: 16px 20px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: baseline;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .chart-header h3 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; margin: 0; }
-        .chart-sub { font-size: 12px; color: var(--text-muted); font-weight: 500; }
-        .chart-body { padding: 16px 20px 20px; position: relative; height: 300px; }
-        .chart-body canvas { max-height: 100%; }
+/* ============ LOGIN ============ */
+.login-wrap{
+  max-width:440px;margin:40px auto;
+  background:#fff;border:1px solid var(--mm-line);border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-lg);overflow:hidden;
+}
+.login-hero{
+  background:linear-gradient(120deg,#1A1A1A 0%,#2E0B0B 100%);
+  padding:34px 32px;color:#fff;text-align:center;position:relative;overflow:hidden;
+}
+.login-hero::before{
+  content:"";position:absolute;top:-60px;right:-40px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(223,0,0,.5) 0%,transparent 70%);pointer-events:none;
+}
+.login-hero-icon{
+  position:relative;z-index:1;
+  width:64px;height:64px;border-radius:50%;
+  background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);
+  display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:#fff;
+  backdrop-filter:blur(6px);
+}
+.login-hero h2{font-size:24px;font-weight:800;letter-spacing:-.5px;margin-bottom:6px;position:relative;z-index:1;}
+.login-hero p{font-size:13px;color:rgba(255,255,255,.7);position:relative;z-index:1;}
+.login-body{padding:28px 32px 32px;}
+.login-body label{
+  display:block;font-size:11px;font-weight:800;letter-spacing:1px;
+  text-transform:uppercase;color:var(--mm-gray);margin-bottom:8px;
+}
+.login-body input{
+  width:100%;padding:13px 16px;border:1px solid var(--mm-line);border-radius:10px;
+  font-size:14px;font-family:inherit;background:#fff;color:var(--mm-ink);
+  transition:border-color .15s,box-shadow .15s;margin-bottom:16px;
+}
+.login-body input:focus{outline:none;border-color:var(--mm-red);box-shadow:0 0 0 4px rgba(223,0,0,.1);}
+.login-body button{
+  width:100%;padding:13px 20px;background:var(--mm-red);color:#fff;border:none;
+  border-radius:10px;font-size:14px;font-weight:800;letter-spacing:.3px;cursor:pointer;
+  transition:background .15s,transform .15s;
+}
+.login-body button:hover{background:var(--mm-red-dark);transform:translateY(-1px);}
+#error-msg{
+  color:var(--mm-red);background:var(--mm-red-soft);border:1px solid #FAD4D4;
+  padding:10px 14px;border-radius:10px;font-size:12.5px;margin-top:14px;
+  display:none;text-align:left;font-weight:600;
+}
 
-        /* ---------- TABLE ---------- */
-        .table-container {
-            background: var(--surface-color); border-radius: var(--radius);
-            box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); overflow: hidden;
-        }
-        .table-header { padding: 18px 22px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .table-header h3 { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; margin: 0; }
-        .table-header .table-count { font-size: 12px; color: var(--text-muted); font-weight: 600; background: #e2e8f0; padding: 3px 10px; border-radius: 20px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-        th {
-            background: #f8fafc; color: var(--text-muted); font-weight: 700; text-align: left;
-            padding: 12px 22px; border-bottom: 1px solid var(--border-color); font-size: 11px;
-            text-transform: uppercase; letter-spacing: .5px; white-space: nowrap;
-        }
-        td { padding: 13px 22px; border-bottom: 1px solid #f1f5f9; color: var(--text-main); font-weight: 500; }
-        tbody tr:last-child td { border-bottom: none; }
-        tbody tr:hover { background: #f8fafc; }
-        td:first-child { font-weight: 700; color: var(--text-main); }
+/* ============ DASHBOARD ============ */
+.dash{display:flex;flex-direction:column;gap:22px;max-width:1280px;margin-inline:auto;}
+.dash__hero{
+  background:linear-gradient(120deg,#1A1A1A 0%,#2E0B0B 100%);
+  border-radius:var(--radius-lg);padding:30px 34px;color:#fff;
+  position:relative;overflow:hidden;box-shadow:var(--shadow-lg);
+}
+.dash__hero::before{
+  content:"";position:absolute;top:-80px;right:-60px;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,rgba(223,0,0,.55) 0%,transparent 68%);pointer-events:none;
+}
+.dash__hero-inner{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:24px;justify-content:space-between;align-items:flex-end;}
+.dash__eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:800;letter-spacing:1.8px;text-transform:uppercase;
+  color:#FF8A8A;margin-bottom:12px;
+}
+.dash__eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--mm-red);box-shadow:0 0 0 4px rgba(223,0,0,.25);}
+.dash__greeting{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.8px;line-height:1.15;margin-bottom:8px;}
+.dash__greeting .accent{color:#FF5252}
+.dash__sub{font-size:13.5px;color:rgba(255,255,255,.72);font-weight:500;max-width:60ch;line-height:1.55;}
+.dash__clock{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right;flex-shrink:0;}
+.dash__clock-time{font-size:clamp(26px,3.6vw,36px);font-weight:800;letter-spacing:-1.2px;line-height:1;font-variant-numeric:tabular-nums;color:#fff;}
+.dash__clock-date{font-size:11.5px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:rgba(255,255,255,.55);}
 
-        /* ---------- FOOTER ---------- */
-        .app-footer { text-align: center; padding: 20px 32px; color: var(--text-muted); font-size: 12px; border-top: 1px solid var(--border-color); background: var(--surface-color); }
-        .app-footer strong { color: var(--text-main); font-weight: 700; }
+/* Filtros */
+.filter-box{
+  background:#fff;padding:16px 20px;border-radius:var(--radius);
+  margin-bottom:20px;box-shadow:var(--shadow-sm);border:1px solid var(--mm-line);
+  display:flex;align-items:center;flex-wrap:wrap;gap:12px;
+}
+.filter-box .filter-label{
+  font-size:11px;font-weight:800;color:var(--mm-gray);
+  text-transform:uppercase;letter-spacing:.8px;
+}
+.filter-box input[type="date"]{
+  width:auto;padding:9px 13px;font-size:13px;font-weight:600;
+  background:#F7F8FA;border:1px solid var(--mm-line);border-radius:9px;
+  font-family:inherit;color:var(--mm-ink);transition:border-color .15s;
+}
+.filter-box input[type="date"]:focus{outline:none;border-color:var(--mm-red);background:#fff;}
+.filter-divider{color:var(--mm-gray-light);font-size:13px;}
+.filter-box button{
+  padding:9px 18px;font-size:12.5px;font-weight:800;border-radius:9px;
+  background:var(--mm-red);color:#fff;border:none;cursor:pointer;
+  transition:background .15s,transform .15s;
+}
+.filter-box button:hover{background:var(--mm-red-dark);transform:translateY(-1px);}
+.filter-box .btn-secondary{
+  background:#fff;color:var(--mm-ink);border:1px solid var(--mm-line);
+}
+.filter-box .btn-secondary:hover{background:#F7F8FA;color:var(--mm-red);border-color:var(--mm-red);transform:none;}
 
-        #error-msg { color: #dc2626; background: #fef2f2; border: 1px solid #fecaca; padding: 10px 14px; border-radius: var(--radius-sm); font-size: 13px; margin-top: 14px; display: none; text-align: left; font-weight: 500; }
-        .hidden { display: none !important; }
+/* KPI Cards */
+.cards-container{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:22px;}
+.card{
+  background:#fff;padding:20px;border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);border:1px solid var(--mm-line);
+  position:relative;overflow:hidden;transition:all .2s;
+}
+.card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px);}
+.card::after{content:'';position:absolute;top:0;left:0;bottom:0;width:4px;background:var(--mm-red);}
+.card .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+.card h3{font-size:11px;color:var(--mm-gray);text-transform:uppercase;font-weight:800;letter-spacing:.7px;margin:0;}
+.card .kpi-icon{
+  width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+  background:var(--mm-red-soft);color:var(--mm-red);
+}
+.card .kpi-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.card p{
+  font-size:30px;font-weight:800;color:var(--mm-ink);line-height:1;
+  display:flex;align-items:baseline;gap:4px;letter-spacing:-.5px;
+}
+.card p span{font-size:14px;color:var(--mm-gray);font-weight:700;}
+.card.blue::after{background:var(--info);} .card.blue .kpi-icon{background:#dbeafe;color:var(--info);}
+.card.green::after{background:var(--success);} .card.green .kpi-icon{background:#d1fae5;color:var(--success);}
+.card.purple::after{background:var(--purple);} .card.purple .kpi-icon{background:#ede9fe;color:var(--purple);}
+.card.orange::after{background:var(--warning);} .card.orange .kpi-icon{background:#fef3c7;color:var(--warning);}
 
-        /* Estilos para los puntos del semáforo */
-        .status-dot {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-left: 8px;
-            vertical-align: middle;
-            box-shadow: 0 0 0 2px rgba(0,0,0,0.05);
-        }
-        .dot-green { background-color: #10b981; }
-        .dot-yellow { background-color: #f59e0b; }
-        .dot-red { background-color: #ef4444; }
+/* Charts */
+.charts-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px;margin-bottom:22px;}
+.chart-card{
+  background:#fff;border:1px solid var(--mm-line);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);overflow:hidden;display:flex;flex-direction:column;
+}
+.chart-header{
+  padding:16px 20px;border-bottom:1px solid var(--mm-line);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+}
+.chart-header h3{font-size:15px;font-weight:800;letter-spacing:-.3px;margin:0;}
+.chart-sub{font-size:11.5px;color:var(--mm-gray);font-weight:600;}
+.chart-body{padding:16px 20px 20px;position:relative;height:300px;}
+.chart-body canvas{max-height:100%;}
 
-        @media (max-width: 900px) {
-            .sidebar { transform: translateX(-100%); }
-            .main-wrapper { margin-left: 0; }
-            .container { padding: 20px 16px 32px; }
-            .app-header { padding: 14px 16px; }
-            .dashboard-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-            .charts-grid { grid-template-columns: 1fr; }
-            .login-box { padding: 40px 24px; margin: 30px 16px; max-width: 100%; }
-        }
-    </style>
+/* Tabla */
+.table-container{
+  background:#fff;border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);border:1px solid var(--mm-line);overflow:hidden;
+}
+.table-header{
+  padding:16px 20px;border-bottom:1px solid var(--mm-line);
+  display:flex;justify-content:space-between;align-items:center;
+}
+.table-header h3{font-size:15px;font-weight:800;letter-spacing:-.3px;margin:0;}
+.table-header .table-count{
+  font-size:11.5px;color:var(--mm-gray);font-weight:800;
+  background:#F7F8FA;padding:3px 10px;border-radius:20px;border:1px solid var(--mm-line);
+}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{
+  background:#1A1A1A;color:#fff;font-weight:800;text-align:left;
+  padding:11px 20px;font-size:10.5px;
+  text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;
+}
+td{padding:12px 20px;border-top:1px solid var(--mm-line);color:var(--mm-ink-soft);font-weight:500;}
+tbody tr:first-child td{border-top:none}
+tbody tr:hover{background:#F7F8FA}
+td:first-child{font-weight:800;color:var(--mm-ink);}
+
+/* Footer */
+.site-footer{
+  padding:20px 28px;border-top:1px solid var(--mm-line);
+  background:#fff;color:var(--mm-gray);
+  display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;
+  font-size:12px;letter-spacing:.2px;
+}
+.site-footer strong{color:var(--mm-ink);font-weight:800}
+
+/* Overlay móvil */
+.overlay{
+  display:none;position:fixed;inset:0;
+  background:rgba(16,24,40,.45);backdrop-filter:blur(2px);
+  z-index:150;opacity:0;transition:opacity var(--transition);
+}
+.overlay.is-visible{display:block;opacity:1}
+
+/* Semáforos */
+.status-dot{
+  display:inline-block;width:10px;height:10px;border-radius:50%;
+  margin-left:8px;vertical-align:middle;
+  box-shadow:0 0 0 2px rgba(0,0,0,.05);
+}
+.dot-green{background-color:var(--success);}
+.dot-yellow{background-color:var(--warning);}
+.dot-red{background-color:var(--danger);}
+
+.hidden{display:none !important;}
+
+/* Responsive */
+@media (max-width:1024px){
+  .charts-grid{grid-template-columns:1fr;}
+}
+@media (max-width:880px){
+  .sidebar{transform:translateX(-100%);width:var(--sidebar-w);}
+  .app.is-mobile-open .sidebar{transform:translateX(0);box-shadow:var(--shadow-lg)}
+  .app.is-mobile-open .overlay.is-visible{display:block;opacity:1}
+  .app.is-collapsed .sidebar{width:var(--sidebar-w)}
+  .app.is-collapsed .sidebar__title,
+  .app.is-collapsed .sidebar__label,
+  .app.is-collapsed .sidebar__text,
+  .app.is-collapsed .sidebar__badge,
+  .app.is-collapsed .sidebar__footer{opacity:1;pointer-events:auto;width:auto}
+  .app.is-collapsed .sidebar__link{justify-content:flex-start;padding:11px 12px}
+  .app.is-collapsed .sidebar__link.is-active::before{left:-12px}
+  .app.is-collapsed .main{margin-left:0}
+  .main{margin-left:0}
+  .topbar__hamburger{display:flex}
+  .topbar{padding:12px 16px}
+  .content{padding:18px}
+  .sidebar__collapse{display:none}
+  .dash__hero{padding:24px 22px}
+  .dash__hero-inner{align-items:flex-start;gap:18px}
+  .dash__clock{text-align:left;align-items:flex-start}
+  .user-meta{display:none}
+}
+@media (max-width:640px){
+  .cards-container{grid-template-columns:1fr 1fr;}
+  .card p{font-size:24px;}
+  .filter-box{padding:12px 14px;}
+  .filter-box input[type="date"]{flex:1;min-width:0;}
+  .login-wrap{margin:20px 12px;}
+  .login-hero{padding:26px 22px;}
+  .login-hero h2{font-size:20px}
+  .login-body{padding:22px}
+  .dash__greeting{font-size:20px}
+  .dash__clock-time{font-size:24px}
+  .site-footer{flex-direction:column;text-align:center;justify-content:center}
+  .table-header{flex-direction:column;align-items:flex-start;gap:8px}
+}
+</style>
 </head>
 <body>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="sidebar-brand">
-            <div class="logo-mark">TA</div>
-            <div class="brand-text">
-                <strong>Abai</strong>
-                <span>MediaMarkt</span>
-            </div>
-        </div>
-        <nav class="nav-section">
-            <div class="nav-section-title">Analytics</div>
-            <div class="nav-item active">
-                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
-                Dashboard
-            </div>
-        </nav>
-        <div class="sidebar-footer">Ledezma Enterprises © 2026</div>
-    </aside>
+<div class="app" id="app">
 
-    <!-- MAIN -->
-    <div class="main-wrapper">
-        <header class="app-header">
-            <div class="header-left">
-                <h1>Portal de Agentes</h1>
-                <div class="breadcrumb">Inicio / <span class="current">Dashboard</span></div>
-            </div>
-            <div class="header-right">
-                <div class="user-chip hidden" id="user-chip">
-                    <div class="user-avatar" id="header-avatar">?</div>
-                    <div class="user-meta">
-                        <strong id="header-user-name">—</strong>
-                        <small id="header-user-email">—</small>
-                    </div>
-                </div>
-                <button class="btn-logout hidden" id="logout-btn" onclick="logout()">Cerrar Sesión</button>
-            </div>
-        </header>
-
-        <div class="container">
-            <!-- LOGIN -->
-            <div id="login-section" class="login-box">
-                <div class="login-icon">
-                    <svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
-                </div>
-                <h2>Bienvenido</h2>
-                <p>Ingresa tu correo corporativo para acceder a tus métricas de rendimiento.</p>
-                <input type="email" id="email-input" placeholder="nombre.apellido@mediamarkt.es" onkeydown="if(event.key === 'Enter') login()">
-                <button onclick="login()">Iniciar Sesión</button>
-                <div id="error-msg"></div>
-            </div>
-
-            <!-- DASHBOARD -->
-            <div id="dashboard-section" class="hidden">
-                <div class="dashboard-header">
-                    <div>
-                        <div class="page-tag">
-                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zm1 12H9v-2h2v2zm0-4H9V6h2v4z"/></svg>
-                            Rendimiento
-                        </div>
-                        <h2 id="agent-name">Cargando...</h2>
-                        <p>Resumen de rendimiento y detalle de gestión diaria</p>
-                    </div>
-                </div>
-
-                <div class="filter-box">
-                    <span class="filter-label">Periodo</span>
-                    <input type="date" id="fecha-inicio">
-                    <span class="filter-divider">→</span>
-                    <input type="date" id="fecha-fin">
-                    <button onclick="aplicarFiltro()">Aplicar</button>
-                    <button class="btn-secondary" onclick="resetFiltro()">Ver Todo el Mes</button>
-                </div>
-
-                <div class="cards-container" id="totales-cards"></div>
-
-                <div class="charts-grid">
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3>Evolución diaria</h3>
-                            <span class="chart-sub">Llamadas, AHT y FCR por día</span>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="chart-evolucion"></canvas>
-                        </div>
-                    </div>
-                    <div class="chart-card">
-                        <div class="chart-header">
-                            <h3>Distribución de calidad</h3>
-                            <span class="chart-sub">FCR vs CSAT vs CBT en el periodo</span>
-                        </div>
-                        <div class="chart-body">
-                            <canvas id="chart-calidad"></canvas>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="table-container">
-                    <div class="table-header">
-                        <h3>Detalle Diario de Gestión</h3>
-                        <span class="table-count" id="table-count">0 registros</span>
-                    </div>
-                    <div style="overflow-x: auto;">
-                        <table id="tabla-diaria">
-                            <thead>
-                                <tr>
-                                    <th>Fecha</th>
-                                    <th>Llamadas (Handled)</th>
-                                    <th>AHT (Segundos)</th>
-                                    <th>% FCR</th>
-                                    <th>% CSAT</th>
-                                    <th>% Ratio (CBT)</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <footer class="app-footer">
-            Diseñado por <strong>Ledezma Enterprises</strong> &copy; 2026
-        </footer>
+  <!-- =====================================================
+       SIDEBAR
+       ===================================================== -->
+  <aside class="sidebar" id="sidebar">
+    <a class="sidebar__brand" href="#">
+      <div class="sidebar__logo">TA</div>
+      <div class="sidebar__title">
+        <strong>Team Adrian</strong>
+        <span>Portal de Agentes</span>
+      </div>
+    </a>
+    <button type="button" class="sidebar__collapse" id="collapseBtn" aria-label="Colapsar menú">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <nav class="sidebar__nav" id="sidebarNav">
+      <div class="sidebar__label">Analytics</div>
+      <a class="sidebar__link is-active" href="#" onclick="return false;">
+        <span class="sidebar__icon"><svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg></span>
+        <span class="sidebar__text">Dashboard</span>
+      </a>
+      <div class="sidebar__label">Accesos</div>
+      <a class="sidebar__link" href="https://thedarkkningt17.github.io/artemisa/#inicio" target="_blank" rel="noopener">
+        <span class="sidebar__icon"><svg class="stroke" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span>
+        <span class="sidebar__text">Portal Principal</span>
+        <span class="sidebar__badge">↗</span>
+      </a>
+      <a class="sidebar__link" href="https://thedarkkningt17.github.io/artemisa/datosdeaccesoweb.html" target="_blank" rel="noopener">
+        <span class="sidebar__icon"><svg class="stroke" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg></span>
+        <span class="sidebar__text">Datos de acceso web</span>
+        <span class="sidebar__badge">↗</span>
+      </a>
+      <a class="sidebar__link" href="https://thedarkkningt17.github.io/artemisa/apoyo" target="_blank" rel="noopener">
+        <span class="sidebar__icon"><svg class="stroke" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg></span>
+        <span class="sidebar__text">Apoyo</span>
+        <span class="sidebar__badge">↗</span>
+      </a>
+    </nav>
+    <div class="sidebar__footer">
+      <strong>Ledezma Enterprises</strong>
+      Portal interno · 2026
     </div>
+  </aside>
+
+  <div class="overlay" id="overlay"></div>
+
+  <!-- =====================================================
+       MAIN
+       ===================================================== -->
+  <div class="main" id="main">
+
+    <header class="topbar">
+      <div class="topbar__left">
+        <button type="button" class="topbar__hamburger" id="hamburger" aria-label="Abrir menú">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <div class="topbar__title" id="topbarTitle">Dashboard <span>Analytics</span></div>
+      </div>
+      <div class="topbar__right">
+        <span class="topbar__date" id="topbarDate"></span>
+        <div class="user-chip hidden" id="user-chip">
+          <div class="user-avatar" id="header-avatar">?</div>
+          <div class="user-meta">
+            <strong id="header-user-name">—</strong>
+            <small id="header-user-email">—</small>
+          </div>
+        </div>
+        <button class="btn-logout hidden" id="logout-btn" onclick="logout()">Cerrar Sesión</button>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ============================================
+           LOGIN
+           ============================================ -->
+      <div id="login-section" class="login-wrap">
+        <div class="login-hero">
+          <div class="login-hero-icon">
+            <svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+          </div>
+          <h2>Bienvenido</h2>
+          <p>Ingresa tu correo corporativo para acceder a tus métricas de rendimiento.</p>
+        </div>
+        <div class="login-body">
+          <label for="email-input">Correo corporativo</label>
+          <input type="email" id="email-input" placeholder="nombre.apellido@mediamarkt.es" onkeydown="if(event.key === 'Enter') login()">
+          <button onclick="login()">Iniciar Sesión</button>
+          <div id="error-msg"></div>
+        </div>
+      </div>
+
+      <!-- ============================================
+           DASHBOARD
+           ============================================ -->
+      <div id="dashboard-section" class="hidden">
+        <div class="dash">
+
+          <div class="dash__hero">
+            <div class="dash__hero-inner">
+              <div>
+                <span class="dash__eyebrow">Portal de Agentes · Team Adrian</span>
+                <h1 class="dash__greeting" id="dashGreeting">Hola, <span class="accent">agente</span></h1>
+                <p class="dash__sub">Resumen de rendimiento y detalle de gestión diaria. Consulta tus KPIs, evolución y calidad del periodo seleccionado.</p>
+              </div>
+              <div class="dash__clock">
+                <div class="dash__clock-time" id="dashClock">--:--:--</div>
+                <div class="dash__clock-date" id="dashDate">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-box">
+            <span class="filter-label">Periodo</span>
+            <input type="date" id="fecha-inicio">
+            <span class="filter-divider">→</span>
+            <input type="date" id="fecha-fin">
+            <button onclick="aplicarFiltro()">Aplicar</button>
+            <button class="btn-secondary" onclick="resetFiltro()">Ver Todo el Mes</button>
+          </div>
+
+          <div class="cards-container" id="totales-cards"></div>
+
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3>Evolución diaria</h3>
+                <span class="chart-sub">Llamadas, AHT y FCR por día</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chart-evolucion"></canvas>
+              </div>
+            </div>
+            <div class="chart-card">
+              <div class="chart-header">
+                <h3>Distribución de calidad</h3>
+                <span class="chart-sub">FCR vs CSAT vs CBT en el periodo</span>
+              </div>
+              <div class="chart-body">
+                <canvas id="chart-calidad"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <div class="table-header">
+              <h3>Detalle Diario de Gestión</h3>
+              <span class="table-count" id="table-count">0 registros</span>
+            </div>
+            <div style="overflow-x: auto;">
+              <table id="tabla-diaria">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Llamadas (Handled)</th>
+                    <th>AHT (Segundos)</th>
+                    <th>% FCR</th>
+                    <th>% CSAT</th>
+                    <th>% Ratio (CBT)</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+
+    <footer class="site-footer">
+      <span>Diseñado por <strong>Ledezma Enterprises</strong></span>
+      <span>Portal interno <strong>Team Adrian</strong> · 2026</span>
+    </footer>
+
+  </div>
+</div>
 
 <script>
-    let datosTotales = [];
-    let datosBase = [];
-    let agenteLogueado = "";
-    let datosAgenteFiltrados = [];
-    let chartEvolucion = null;
-    let chartCalidad = null;
+/* ==========================================================
+   VARIABLES GLOBALES
+   ========================================================== */
+let datosTotales = [];
+let datosBase = [];
+let agenteLogueado = "";
+let datosAgenteFiltrados = [];
+let chartEvolucion = null;
+let chartCalidad = null;
 
-    function parseNumeroExcel(val) {
-        if (!val) return 0;
-        let str = String(val).trim();
-        let isPercent = str.includes('%');
-        str = str.replace('%', '').trim();
-        
-        if (str.includes('.') && str.includes(',')) {
-            str = str.replace(/\./g, '').replace(',', '.');
-        } else if (str.includes(',')) {
-            str = str.replace(',', '.');
+/* ==========================================================
+   UTILIDADES
+   ========================================================== */
+function parseNumeroExcel(val) {
+    if (!val) return 0;
+    let str = String(val).trim();
+    let isPercent = str.includes('%');
+    str = str.replace('%', '').trim();
+
+    if (str.includes('.') && str.includes(',')) {
+        str = str.replace(/\./g, '').replace(',', '.');
+    } else if (str.includes(',')) {
+        str = str.replace(',', '.');
+    }
+
+    let num = parseFloat(str) || 0;
+    return isPercent ? num / 100 : num;
+}
+
+function getTrendIcon(kpi, valor) {
+    let html = '';
+    if (kpi === 'AHT') {
+        if (valor >= 280) html = '<span class="status-dot dot-red" title="Alerta (>= 280s)"></span>';
+        else if (valor >= 270) html = '<span class="status-dot dot-yellow" title="En meta (270-279s)"></span>';
+        else html = '<span class="status-dot dot-green" title="Excelente (< 270s)"></span>';
+    }
+    else if (kpi === 'FCR') {
+        if (valor >= 0.87) html = '<span class="status-dot dot-green" title="Excelente (>= 87%)"></span>';
+        else if (valor >= 0.82) html = '<span class="status-dot dot-yellow" title="En meta (82-86%)"></span>';
+        else html = '<span class="status-dot dot-red" title="Alerta (< 82%)"></span>';
+    }
+    else if (kpi === 'CSAT') {
+        if (valor >= 0.86) html = '<span class="status-dot dot-green" title="Excelente (>= 86%)"></span>';
+        else if (valor >= 0.74) html = '<span class="status-dot dot-yellow" title="En meta (74-85%)"></span>';
+        else html = '<span class="status-dot dot-red" title="Alerta (< 74%)"></span>';
+    }
+    else if (kpi === 'RATIO') {
+        if (valor >= 0.76) html = '<span class="status-dot dot-green" title="Excelente (>= 76%)"></span>';
+        else if (valor >= 0.71) html = '<span class="status-dot dot-yellow" title="En meta (71-75%)"></span>';
+        else html = '<span class="status-dot dot-red" title="Alerta (< 71%)"></span>';
+    }
+    return html;
+}
+
+function formatearFechaParaInput(fechaStr) {
+    if(!fechaStr) return '';
+    let f = fechaStr.split(' ')[0];
+    let partes = f.split('/');
+    if(partes.length === 3) {
+        let dia = partes[0].padStart(2, '0');
+        let mes = partes[1].padStart(2, '0');
+        let anio = partes[2];
+        return `${anio}-${mes}-${dia}`;
+    }
+    return f;
+}
+
+function getVal(row, columnName) {
+    if (!row) return null;
+    const key = Object.keys(row).find(k => k.trim().toUpperCase() === columnName.trim().toUpperCase());
+    return key ? row[key] : null;
+}
+
+function parseCSV(text) {
+    text = text.replace(/^\uFEFF/, '').replace(/\r/g, '');
+    const lines = text.split('\n').filter(line => line.trim() !== '');
+    const separator = lines[0].includes(';') ? ';' : ',';
+    const headers = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
+    const result = [];
+    for(let i = 1; i < lines.length; i++) {
+        let currentline = [];
+        let inQuotes = false;
+        let currentWord = "";
+        for (let char of lines[i]) {
+            if (char === '"') inQuotes = !inQuotes;
+            else if (char === separator && !inQuotes) { currentline.push(currentWord); currentWord = ""; }
+            else { currentWord += char; }
         }
-        
-        let num = parseFloat(str) || 0;
-        return isPercent ? num / 100 : num;
-    }
-
-    function getTrendIcon(kpi, valor) {
-        let html = '';
-        if (kpi === 'AHT') {
-            if (valor >= 280) html = '<span class="status-dot dot-red" title="Alerta (>= 280s)"></span>';
-            else if (valor >= 270) html = '<span class="status-dot dot-yellow" title="En meta (270-279s)"></span>';
-            else html = '<span class="status-dot dot-green" title="Excelente (< 270s)"></span>';
-        } 
-        else if (kpi === 'FCR') {
-            if (valor >= 0.87) html = '<span class="status-dot dot-green" title="Excelente (>= 87%)"></span>';
-            else if (valor >= 0.82) html = '<span class="status-dot dot-yellow" title="En meta (82-86%)"></span>';
-            else html = '<span class="status-dot dot-red" title="Alerta (< 82%)"></span>';
-        }
-        else if (kpi === 'CSAT') {
-            if (valor >= 0.86) html = '<span class="status-dot dot-green" title="Excelente (>= 86%)"></span>';
-            else if (valor >= 0.74) html = '<span class="status-dot dot-yellow" title="En meta (74-85%)"></span>';
-            else html = '<span class="status-dot dot-red" title="Alerta (< 74%)"></span>';
-        }
-        else if (kpi === 'RATIO') {
-            if (valor >= 0.76) html = '<span class="status-dot dot-green" title="Excelente (>= 76%)"></span>';
-            else if (valor >= 0.71) html = '<span class="status-dot dot-yellow" title="En meta (71-75%)"></span>';
-            else html = '<span class="status-dot dot-red" title="Alerta (< 71%)"></span>';
-        }
-        return html;
-    }
-
-    function formatearFechaParaInput(fechaStr) {
-        if(!fechaStr) return '';
-        let f = fechaStr.split(' ')[0];
-        let partes = f.split('/');
-        if(partes.length === 3) {
-            let dia = partes[0].padStart(2, '0');
-            let mes = partes[1].padStart(2, '0');
-            let anio = partes[2];
-            return `${anio}-${mes}-${dia}`;
-        }
-        return f;
-    }
-
-    function getVal(row, columnName) {
-        if (!row) return null;
-        const key = Object.keys(row).find(k => k.trim().toUpperCase() === columnName.trim().toUpperCase());
-        return key ? row[key] : null;
-    }
-
-    async function cargarDatos() {
-        try {
-            const resTotales = await fetch('TOTALES_AGENTE.csv');
-            const textTotales = await resTotales.text();
-            datosTotales = parseCSV(textTotales);
-
-            const resBase = await fetch('BASE.csv');
-            const textBase = await resBase.text();
-            datosBase = parseCSV(textBase);
-
-            console.log("Datos cargados correctamente.");
-        } catch (error) {
-            console.error("Error cargando CSV", error);
-            mostrarError("Error al cargar los datos. Recarga la página.");
-        }
-    }
-
-    function parseCSV(text) {
-        text = text.replace(/^\uFEFF/, '').replace(/\r/g, '');
-        const lines = text.split('\n').filter(line => line.trim() !== '');
-        const separator = lines[0].includes(';') ? ';' : ',';
-        const headers = lines[0].split(separator).map(h => h.trim().replace(/^"|"$/g, ''));
-        const result = [];
-        for(let i = 1; i < lines.length; i++) {
-            let currentline = [];
-            let inQuotes = false;
-            let currentWord = "";
-            for (let char of lines[i]) {
-                if (char === '"') inQuotes = !inQuotes;
-                else if (char === separator && !inQuotes) { currentline.push(currentWord); currentWord = ""; }
-                else { currentWord += char; }
-            }
-            currentline.push(currentWord);
-            const obj = {};
-            headers.forEach((header, index) => {
-                let val = currentline[index] ? currentline[index].trim().replace(/^"|"$/g, '') : "";
-                obj[header] = val;
-            });
-            result.push(obj);
-        }
-        return result;
-    }
-
-    function mostrarError(msg) {
-        const el = document.getElementById('error-msg');
-        el.innerText = msg;
-        el.style.display = 'block';
-    }
-
-    function login() {
-        const email = document.getElementById('email-input').value.trim().toLowerCase();
-        if(!email) return;
-
-        const agenteTotal = datosTotales.find(a => {
-            let e = getVal(a, 'Email_Key');
-            return e && e.toLowerCase() === email;
+        currentline.push(currentWord);
+        const obj = {};
+        headers.forEach((header, index) => {
+            let val = currentline[index] ? currentline[index].trim().replace(/^"|"$/g, '') : "";
+            obj[header] = val;
         });
-
-        if (agenteTotal) {
-            agenteLogueado = email;
-            document.getElementById('login-section').classList.add('hidden');
-            document.getElementById('dashboard-section').classList.remove('hidden');
-            document.getElementById('logout-btn').classList.remove('hidden');
-            document.getElementById('user-chip').classList.remove('hidden');
-
-            let nombre = getVal(agenteTotal, 'Agentes.NOMBRE COMPLETO') || "Agente";
-            document.getElementById('agent-name').innerText = "Hola, " + nombre;
-            document.getElementById('header-user-name').innerText = nombre;
-            document.getElementById('header-user-email').innerText = email;
-            document.getElementById('header-avatar').innerText = nombre.substring(0,2).toUpperCase();
-
-            const fechas = datosBase
-                .filter(r => {
-                    let e = getVal(r, 'Email_Key');
-                    return e && e.toLowerCase() === email;
-                })
-                .map(r => formatearFechaParaInput(getVal(r, 'DATE')))
-                .filter(f => f)
-                .sort();
-
-            if(fechas.length > 0) {
-                document.getElementById('fecha-inicio').value = fechas[0];
-                document.getElementById('fecha-fin').value = fechas[fechas.length - 1];
-            }
-
-            aplicarFiltro();
-        } else {
-            mostrarError("Correo no encontrado. Verifica e intenta de nuevo.");
-        }
+        result.push(obj);
     }
+    return result;
+}
 
-    function logout() {
-        document.getElementById('email-input').value = '';
-        document.getElementById('error-msg').style.display = 'none';
-        document.getElementById('login-section').classList.remove('hidden');
-        document.getElementById('dashboard-section').classList.add('hidden');
-        document.getElementById('logout-btn').classList.add('hidden');
-        document.getElementById('user-chip').classList.add('hidden');
-        if (chartEvolucion) { chartEvolucion.destroy(); chartEvolucion = null; }
-        if (chartCalidad)   { chartCalidad.destroy();   chartCalidad = null; }
+function mostrarError(msg) {
+    const el = document.getElementById('error-msg');
+    el.innerText = msg;
+    el.style.display = 'block';
+}
+
+/* ==========================================================
+   CARGA DE DATOS
+   ========================================================== */
+async function cargarDatos() {
+    try {
+        const resTotales = await fetch('TOTALES_AGENTE.csv');
+        const textTotales = await resTotales.text();
+        datosTotales = parseCSV(textTotales);
+
+        const resBase = await fetch('BASE.csv');
+        const textBase = await resBase.text();
+        datosBase = parseCSV(textBase);
+
+        console.log("Datos cargados correctamente.");
+    } catch (error) {
+        console.error("Error cargando CSV", error);
+        mostrarError("Error al cargar los datos. Recarga la página.");
     }
+}
 
-    function aplicarFiltro() {
-        const inicio = document.getElementById('fecha-inicio').value;
-        const fin = document.getElementById('fecha-fin').value;
+/* ==========================================================
+   LOGIN / LOGOUT
+   ========================================================== */
+function login() {
+    const email = document.getElementById('email-input').value.trim().toLowerCase();
+    if(!email) return;
 
-        if(!inicio || !fin) return;
+    const agenteTotal = datosTotales.find(a => {
+        let e = getVal(a, 'Email_Key');
+        return e && e.toLowerCase() === email;
+    });
 
-        // 1. Buscamos los totales precalculados por Power Query
-        const agenteTotal = datosTotales.find(a => {
-            let e = getVal(a, 'Email_Key');
-            return e && e.toLowerCase() === agenteLogueado;
-        });
+    if (agenteTotal) {
+        agenteLogueado = email;
+        document.getElementById('login-section').classList.add('hidden');
+        document.getElementById('dashboard-section').classList.remove('hidden');
+        document.getElementById('logout-btn').classList.remove('hidden');
+        document.getElementById('user-chip').classList.remove('hidden');
 
-        // 2. Filtramos los datos diarios para la tabla y gráficas
-        let filasFiltradas = datosBase.filter(row => {
-            let e = getVal(row, 'Email_Key');
-            if(!e || e.toLowerCase() !== agenteLogueado) return false;
-            let fechaRow = formatearFechaParaInput(getVal(row, 'DATE'));
-            return fechaRow >= inicio && fechaRow <= fin;
-        });
+        let nombre = getVal(agenteTotal, 'Agentes.NOMBRE COMPLETO') || "Agente";
+        document.getElementById('dashGreeting').innerHTML = `Hola, <span class="accent">${nombre.split(' ')[0]}</span>`;
+        document.getElementById('header-user-name').innerText = nombre;
+        document.getElementById('header-user-email').innerText = email;
+        document.getElementById('header-avatar').innerText = nombre.substring(0,2).toUpperCase();
 
-        let fechasUnicas = new Set();
-        datosAgenteFiltrados = filasFiltradas.filter(row => {
-            let f = getVal(row, 'DATE');
-            if (!fechasUnicas.has(f)) { fechasUnicas.add(f); return true; }
-            return false;
-        });
-
-        // 3. Calculamos los valores para las tarjetas (Usando TOTALES_AGENTE)
-        const ahtTotal = parseNumeroExcel(getVal(agenteTotal, 'AHT_Total_S'));
-        const fcrTotal = parseNumeroExcel(getVal(agenteTotal, '%_FCR_Total'));
-        const csatTotal = parseNumeroExcel(getVal(agenteTotal, '%_CSAT_Total'));
-        const ratioTotal = parseNumeroExcel(getVal(agenteTotal, '%_Ratio_Total'));
-
-        const container = document.getElementById('totales-cards');
-        container.innerHTML = `
-            <div class="card blue">
-                <div class="card-top">
-                    <h3>AHT Promedio</h3>
-                    <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-                </div>
-                <p>${ahtTotal.toFixed(2)}<span>s</span> ${getTrendIcon('AHT', ahtTotal)}</p>
-            </div>
-            <div class="card green">
-                <div class="card-top">
-                    <h3>% FCR</h3>
-                    <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-                </div>
-                <p>${(fcrTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('FCR', fcrTotal)}</p>
-            </div>
-            <div class="card purple">
-                <div class="card-top">
-                    <h3>% CSAT</h3>
-                    <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
-                </div>
-                <p>${(csatTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('CSAT', csatTotal)}</p>
-            </div>
-            <div class="card orange">
-                <div class="card-top">
-                    <h3>% Ratio (CBT)</h3>
-                    <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg></div>
-                </div>
-                <p>${(ratioTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('RATIO', ratioTotal)}</p>
-            </div>
-        `;
-
-        // 4. Llenamos la tabla diaria
-        const tbody = document.querySelector('#tabla-diaria tbody');
-        tbody.innerHTML = '';
-
-        datosAgenteFiltrados.sort((a,b) => {
-            let fa = formatearFechaParaInput(getVal(a, 'DATE'));
-            let fb = formatearFechaParaInput(getVal(b, 'DATE'));
-            return fa.localeCompare(fb);
-        }).forEach(row => {
-            const tr = document.createElement('tr');
-            let fechaMostrar = getVal(row, 'DATE') ? getVal(row, 'DATE').split(' ')[0] : '';
-
-            const fcrVal = getVal(row, '% IVR FCR');
-            const csatVal = getVal(row, '% IVR CSAT');
-
-            let cbtDia = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)');
-            let hntDia = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)');
-            let numCBT = parseNumeroExcel(cbtDia);
-            let numHNT = parseNumeroExcel(hntDia);
-            let calcRatioDia = numHNT > 0 ? (numCBT / numHNT) : 0;
-
-            const fcrRow = fcrVal ? (parseNumeroExcel(fcrVal) * 100).toFixed(1) + '%' : '-';
-            const csatRow = csatVal ? (parseNumeroExcel(csatVal) * 100).toFixed(1) + '%' : '-';
-            const ratioRow = numHNT > 0 ? (calcRatioDia * 100).toFixed(1) + '%' : '-';
-            const ahtRow = getVal(row, 'AHT (S)') ? parseNumeroExcel(getVal(row, 'AHT (S)')).toFixed(0) : '-';
-
-            // Convertimos a números para evaluar las flechas
-            const fcrNum = parseNumeroExcel(fcrVal);
-            const csatNum = parseNumeroExcel(csatVal);
-            const ahtNum = parseNumeroExcel(getVal(row, 'AHT (S)'));
-
-            tr.innerHTML = `
-                <td>${fechaMostrar}</td>
-                <td>${getVal(row, 'HANDLED INBOUND') || 0}</td>
-                <td>${ahtRow} ${getTrendIcon('AHT', ahtNum)}</td>
-                <td>${fcrRow} ${fcrVal ? getTrendIcon('FCR', fcrNum) : ''}</td>
-                <td>${csatRow} ${csatVal ? getTrendIcon('CSAT', csatNum) : ''}</td>
-                <td>${ratioRow} ${numHNT > 0 ? getTrendIcon('RATIO', calcRatioDia) : ''}</td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        document.getElementById('table-count').innerText = datosAgenteFiltrados.length + ' registros';
-
-        // 5. Renderizamos las gráficas
-        renderCharts();
-    }
-
-    function renderCharts() {
-        const filas = [...datosAgenteFiltrados].sort((a,b) => {
-            let fa = formatearFechaParaInput(getVal(a, 'DATE'));
-            let fb = formatearFechaParaInput(getVal(b, 'DATE'));
-            return fa.localeCompare(fb);
-        });
-
-        const labels = filas.map(r => {
-            const d = getVal(r, 'DATE');
-            return d ? d.split(' ')[0] : '';
-        });
-
-        const handled = filas.map(r => parseNumeroExcel(getVal(r, 'HANDLED INBOUND')));
-        const aht     = filas.map(r => parseNumeroExcel(getVal(r, 'AHT (S)')));
-        const fcr     = filas.map(r => parseNumeroExcel(getVal(r, '% IVR FCR')) * 100);
-
-        let sumFCR = 0, sumCSAT = 0, sumCBT = 0;
-        datosAgenteFiltrados.forEach(row => {
-            sumFCR  += parseNumeroExcel(getVal(row, 'IVR FCR POSITIVE'));
-            sumCSAT += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
-            const cbt = parseNumeroExcel(getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)'));
-            sumCBT += cbt;
-        });
-
-        if (chartEvolucion) chartEvolucion.destroy();
-        if (chartCalidad)   chartCalidad.destroy();
-
-        const ctx1 = document.getElementById('chart-evolucion').getContext('2d');
-        chartEvolucion = new Chart(ctx1, {
-            data: {
-                labels,
-                datasets: [
-                    {
-                        type: 'bar',
-                        label: 'Llamadas',
-                        data: handled,
-                        backgroundColor: 'rgba(59,130,246,0.65)',
-                        borderRadius: 4,
-                        yAxisID: 'y',
-                        order: 2
-                    },
-                    {
-                        type: 'line',
-                        label: 'AHT (s)',
-                        data: aht,
-                        borderColor: '#d81b60',
-                        backgroundColor: 'rgba(216,27,96,0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        pointRadius: 3,
-                        pointBackgroundColor: '#d81b60',
-                        yAxisID: 'y1',
-                        order: 1
-                    },
-                    {
-                        type: 'line',
-                        label: '% FCR',
-                        data: fcr,
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16,185,129,0.1)',
-                        tension: 0.35,
-                        fill: false,
-                        pointRadius: 3,
-                        pointBackgroundColor: '#10b981',
-                        yAxisID: 'y1',
-                        order: 1
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                interaction: { mode: 'index', intersect: false },
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 11, weight: '600' } } },
-                    tooltip: {
-                        backgroundColor: '#1e293b',
-                        padding: 10,
-                        titleFont: { size: 12, weight: '700' },
-                        bodyFont: { size: 12, weight: '500' },
-                        cornerRadius: 6
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: { display: true, text: 'Llamadas', font: { size: 10, weight: '600' }, color: '#64748b' },
-                        grid: { color: '#f1f5f9' },
-                        ticks: { font: { size: 10, weight: '500' }, color: '#64748b' }
-                    },
-                    y1: {
-                        position: 'right',
-                        beginAtZero: true,
-                        title: { display: true, text: 'AHT / %', font: { size: 10, weight: '600' }, color: '#64748b' },
-                        grid: { drawOnChartArea: false },
-                        ticks: { font: { size: 10, weight: '500' }, color: '#64748b' }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 10, weight: '500' }, color: '#64748b', maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }
-                    }
-                }
-            }
-        });
-
-        const ctx2 = document.getElementById('chart-calidad').getContext('2d');
-        chartCalidad = new Chart(ctx2, {
-            type: 'doughnut',
-            data: {
-                labels: ['FCR Positivos', 'CSAT Positivos', 'CBT (No Transfers)'],
-                datasets: [{
-                    data: [sumFCR, sumCSAT, sumCBT],
-                    backgroundColor: ['#10b981', '#8b5cf6', '#f59e0b'],
-                    borderWidth: 0,
-                    hoverOffset: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '65%',
-                plugins: {
-                    legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 11, weight: '600' } } },
-                    tooltip: {
-                        backgroundColor: '#1e293b',
-                        padding: 10,
-                        cornerRadius: 6
-                    }
-                }
-            }
-        });
-    }
-
-    function resetFiltro() {
         const fechas = datosBase
             .filter(r => {
                 let e = getVal(r, 'Email_Key');
-                return e && e.toLowerCase() === agenteLogueado;
+                return e && e.toLowerCase() === email;
             })
             .map(r => formatearFechaParaInput(getVal(r, 'DATE')))
             .filter(f => f)
             .sort();
+
         if(fechas.length > 0) {
             document.getElementById('fecha-inicio').value = fechas[0];
             document.getElementById('fecha-fin').value = fechas[fechas.length - 1];
-            aplicarFiltro();
         }
+
+        aplicarFiltro();
+    } else {
+        mostrarError("Correo no encontrado. Verifica e intenta de nuevo.");
     }
+}
 
-    cargarDatos();
+function logout() {
+    document.getElementById('email-input').value = '';
+    document.getElementById('error-msg').style.display = 'none';
+    document.getElementById('login-section').classList.remove('hidden');
+    document.getElementById('dashboard-section').classList.add('hidden');
+    document.getElementById('logout-btn').classList.add('hidden');
+    document.getElementById('user-chip').classList.add('hidden');
+    if (chartEvolucion) { chartEvolucion.destroy(); chartEvolucion = null; }
+    if (chartCalidad)   { chartCalidad.destroy();   chartCalidad = null; }
+}
+
+/* ==========================================================
+   FILTROS Y RENDER
+   ========================================================== */
+function aplicarFiltro() {
+    const inicio = document.getElementById('fecha-inicio').value;
+    const fin = document.getElementById('fecha-fin').value;
+
+    if(!inicio || !fin) return;
+
+    const agenteTotal = datosTotales.find(a => {
+        let e = getVal(a, 'Email_Key');
+        return e && e.toLowerCase() === agenteLogueado;
+    });
+
+    let filasFiltradas = datosBase.filter(row => {
+        let e = getVal(row, 'Email_Key');
+        if(!e || e.toLowerCase() !== agenteLogueado) return false;
+        let fechaRow = formatearFechaParaInput(getVal(row, 'DATE'));
+        return fechaRow >= inicio && fechaRow <= fin;
+    });
+
+    let fechasUnicas = new Set();
+    datosAgenteFiltrados = filasFiltradas.filter(row => {
+        let f = getVal(row, 'DATE');
+        if (!fechasUnicas.has(f)) { fechasUnicas.add(f); return true; }
+        return false;
+    });
+
+    const ahtTotal = parseNumeroExcel(getVal(agenteTotal, 'AHT_Total_S'));
+    const fcrTotal = parseNumeroExcel(getVal(agenteTotal, '%_FCR_Total'));
+    const csatTotal = parseNumeroExcel(getVal(agenteTotal, '%_CSAT_Total'));
+    const ratioTotal = parseNumeroExcel(getVal(agenteTotal, '%_Ratio_Total'));
+
+    const container = document.getElementById('totales-cards');
+    container.innerHTML = `
+        <div class="card blue">
+            <div class="card-top">
+                <h3>AHT Promedio</h3>
+                <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            </div>
+            <p>${ahtTotal.toFixed(2)}<span>s</span> ${getTrendIcon('AHT', ahtTotal)}</p>
+        </div>
+        <div class="card green">
+            <div class="card-top">
+                <h3>% FCR</h3>
+                <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            </div>
+            <p>${(fcrTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('FCR', fcrTotal)}</p>
+        </div>
+        <div class="card purple">
+            <div class="card-top">
+                <h3>% CSAT</h3>
+                <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+            </div>
+            <p>${(csatTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('CSAT', csatTotal)}</p>
+        </div>
+        <div class="card orange">
+            <div class="card-top">
+                <h3>% Ratio (CBT)</h3>
+                <div class="kpi-icon"><svg viewBox="0 0 24 24"><path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg></div>
+            </div>
+            <p>${(ratioTotal * 100).toFixed(2)}<span>%</span> ${getTrendIcon('RATIO', ratioTotal)}</p>
+        </div>
+    `;
+
+    const tbody = document.querySelector('#tabla-diaria tbody');
+    tbody.innerHTML = '';
+
+    datosAgenteFiltrados.sort((a,b) => {
+        let fa = formatearFechaParaInput(getVal(a, 'DATE'));
+        let fb = formatearFechaParaInput(getVal(b, 'DATE'));
+        return fa.localeCompare(fb);
+    }).forEach(row => {
+        const tr = document.createElement('tr');
+        let fechaMostrar = getVal(row, 'DATE') ? getVal(row, 'DATE').split(' ')[0] : '';
+
+        const fcrVal = getVal(row, '% IVR FCR');
+        const csatVal = getVal(row, '% IVR CSAT');
+
+        let cbtDia = getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)');
+        let hntDia = getVal(row, 'HANDLED INBOUND (NO TRANSFERS)');
+        let numCBT = parseNumeroExcel(cbtDia);
+        let numHNT = parseNumeroExcel(hntDia);
+        let calcRatioDia = numHNT > 0 ? (numCBT / numHNT) : 0;
+
+        const fcrRow = fcrVal ? (parseNumeroExcel(fcrVal) * 100).toFixed(1) + '%' : '-';
+        const csatRow = csatVal ? (parseNumeroExcel(csatVal) * 100).toFixed(1) + '%' : '-';
+        const ratioRow = numHNT > 0 ? (calcRatioDia * 100).toFixed(1) + '%' : '-';
+        const ahtRow = getVal(row, 'AHT (S)') ? parseNumeroExcel(getVal(row, 'AHT (S)')).toFixed(0) : '-';
+
+        const fcrNum = parseNumeroExcel(fcrVal);
+        const csatNum = parseNumeroExcel(csatVal);
+        const ahtNum = parseNumeroExcel(getVal(row, 'AHT (S)'));
+
+        tr.innerHTML = `
+            <td>${fechaMostrar}</td>
+            <td>${getVal(row, 'HANDLED INBOUND') || 0}</td>
+            <td>${ahtRow} ${getTrendIcon('AHT', ahtNum)}</td>
+            <td>${fcrRow} ${fcrVal ? getTrendIcon('FCR', fcrNum) : ''}</td>
+            <td>${csatRow} ${csatVal ? getTrendIcon('CSAT', csatNum) : ''}</td>
+            <td>${ratioRow} ${numHNT > 0 ? getTrendIcon('RATIO', calcRatioDia) : ''}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('table-count').innerText = datosAgenteFiltrados.length + ' registros';
+
+    renderCharts();
+}
+
+/* ==========================================================
+   GRÁFICAS
+   ========================================================== */
+function renderCharts() {
+    const filas = [...datosAgenteFiltrados].sort((a,b) => {
+        let fa = formatearFechaParaInput(getVal(a, 'DATE'));
+        let fb = formatearFechaParaInput(getVal(b, 'DATE'));
+        return fa.localeCompare(fb);
+    });
+
+    const labels = filas.map(r => {
+        const d = getVal(r, 'DATE');
+        return d ? d.split(' ')[0] : '';
+    });
+
+    const handled = filas.map(r => parseNumeroExcel(getVal(r, 'HANDLED INBOUND')));
+    const aht     = filas.map(r => parseNumeroExcel(getVal(r, 'AHT (S)')));
+    const fcr     = filas.map(r => parseNumeroExcel(getVal(r, '% IVR FCR')) * 100);
+
+    let sumFCR = 0, sumCSAT = 0, sumCBT = 0;
+    datosAgenteFiltrados.forEach(row => {
+        sumFCR  += parseNumeroExcel(getVal(row, 'IVR FCR POSITIVE'));
+        sumCSAT += parseNumeroExcel(getVal(row, 'IVR CSAT POSITIVE'));
+        const cbt = parseNumeroExcel(getVal(row, 'CALL BLIND TRANSFERS (NO TRANSFERS)'));
+        sumCBT += cbt;
+    });
+
+    if (chartEvolucion) chartEvolucion.destroy();
+    if (chartCalidad)   chartCalidad.destroy();
+
+    const ctx1 = document.getElementById('chart-evolucion').getContext('2d');
+    chartEvolucion = new Chart(ctx1, {
+        data: {
+            labels,
+            datasets: [
+                {
+                    type: 'bar',
+                    label: 'Llamadas',
+                    data: handled,
+                    backgroundColor: 'rgba(223,0,0,0.55)',
+                    borderRadius: 4,
+                    yAxisID: 'y',
+                    order: 2
+                },
+                {
+                    type: 'line',
+                    label: 'AHT (s)',
+                    data: aht,
+                    borderColor: '#d81b60',
+                    backgroundColor: 'rgba(216,27,96,0.1)',
+                    tension: 0.35,
+                    fill: false,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#d81b60',
+                    yAxisID: 'y1',
+                    order: 1
+                },
+                {
+                    type: 'line',
+                    label: '% FCR',
+                    data: fcr,
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16,185,129,0.1)',
+                    tension: 0.35,
+                    fill: false,
+                    pointRadius: 3,
+                    pointBackgroundColor: '#10b981',
+                    yAxisID: 'y1',
+                    order: 1
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 11, weight: '600', family: 'Montserrat' } } },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 10,
+                    titleFont: { size: 12, weight: '700', family: 'Montserrat' },
+                    bodyFont: { size: 12, weight: '500', family: 'Montserrat' },
+                    cornerRadius: 6
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Llamadas', font: { size: 10, weight: '600', family: 'Montserrat' }, color: '#64748b' },
+                    grid: { color: '#f1f5f9' },
+                    ticks: { font: { size: 10, weight: '500', family: 'Montserrat' }, color: '#64748b' }
+                },
+                y1: {
+                    position: 'right',
+                    beginAtZero: true,
+                    title: { display: true, text: 'AHT / %', font: { size: 10, weight: '600', family: 'Montserrat' }, color: '#64748b' },
+                    grid: { drawOnChartArea: false },
+                    ticks: { font: { size: 10, weight: '500', family: 'Montserrat' }, color: '#64748b' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { font: { size: 10, weight: '500', family: 'Montserrat' }, color: '#64748b', maxRotation: 0, autoSkip: true, maxTicksLimit: 10 }
+                }
+            }
+        }
+    });
+
+    const ctx2 = document.getElementById('chart-calidad').getContext('2d');
+    chartCalidad = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: ['FCR Positivos', 'CSAT Positivos', 'CBT (No Transfers)'],
+            datasets: [{
+                data: [sumFCR, sumCSAT, sumCBT],
+                backgroundColor: ['#10b981', '#8b5cf6', '#f59e0b'],
+                borderWidth: 0,
+                hoverOffset: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '65%',
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 10, boxHeight: 10, font: { size: 11, weight: '600', family: 'Montserrat' } } },
+                tooltip: {
+                    backgroundColor: '#1e293b',
+                    padding: 10,
+                    cornerRadius: 6,
+                    titleFont: { family: 'Montserrat' },
+                    bodyFont: { family: 'Montserrat' }
+                }
+            }
+        }
+    });
+}
+
+function resetFiltro() {
+    const fechas = datosBase
+        .filter(r => {
+            let e = getVal(r, 'Email_Key');
+            return e && e.toLowerCase() === agenteLogueado;
+        })
+        .map(r => formatearFechaParaInput(getVal(r, 'DATE')))
+        .filter(f => f)
+        .sort();
+    if(fechas.length > 0) {
+        document.getElementById('fecha-inicio').value = fechas[0];
+        document.getElementById('fecha-fin').value = fechas[fechas.length - 1];
+        aplicarFiltro();
+    }
+}
+
+/* ==========================================================
+   RELOJ
+   ========================================================== */
+const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+function pad2(n){ return String(n).padStart(2,'0'); }
+
+function actualizarReloj(){
+    const now = new Date();
+    const clockEl = document.getElementById('dashClock');
+    const dateEl = document.getElementById('dashDate');
+    const topDateEl = document.getElementById('topbarDate');
+
+    if (clockEl) clockEl.textContent = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
+
+    const dia = DIAS[now.getDay()];
+    const diaCap = dia.charAt(0).toUpperCase() + dia.slice(1);
+    if (dateEl) dateEl.textContent = `${diaCap}, ${now.getDate()} de ${MESES[now.getMonth()]} de ${now.getFullYear()}`.toUpperCase();
+    if (topDateEl) topDateEl.textContent = `${diaCap}, ${pad2(now.getDate())}/${pad2(now.getMonth()+1)}`;
+}
+actualizarReloj();
+setInterval(actualizarReloj, 1000);
+
+/* ==========================================================
+   SIDEBAR · COLAPSO Y MENÚ MÓVIL
+   ========================================================== */
+const app = document.getElementById('app');
+const collapseBtn = document.getElementById('collapseBtn');
+const hamburger = document.getElementById('hamburger');
+const overlay = document.getElementById('overlay');
+
+function esMovil(){ return window.matchMedia('(max-width: 880px)').matches; }
+
+function abrirMenuMovil(){
+    app.classList.add('is-mobile-open');
+    overlay.classList.add('is-visible');
+}
+function cerrarMenuMovil(){
+    if (!esMovil()) return;
+    app.classList.remove('is-mobile-open');
+    overlay.classList.remove('is-visible');
+}
+function toggleMenuMovil(){
+    if (app.classList.contains('is-mobile-open')) cerrarMenuMovil();
+    else abrirMenuMovil();
+}
+
+if (collapseBtn){
+    collapseBtn.addEventListener('click', () => {
+        app.classList.toggle('is-collapsed');
+        try { localStorage.setItem('mm-agente-sidebar-collapsed', app.classList.contains('is-collapsed') ? '1' : '0'); } catch(e){}
+    });
+}
+if (hamburger) hamburger.addEventListener('click', toggleMenuMovil);
+if (overlay) overlay.addEventListener('click', cerrarMenuMovil);
+
+window.addEventListener('resize', () => {
+    if (!esMovil()){ app.classList.remove('is-mobile-open'); overlay.classList.remove('is-visible'); }
+});
+
+try {
+    if (localStorage.getItem('mm-agente-sidebar-collapsed') === '1' && !esMovil()){
+        app.classList.add('is-collapsed');
+    }
+} catch(e){}
+
+/* ==========================================================
+   ARRANQUE
+   ========================================================== */
+cargarDatos();
 </script>
-
 </body>
 </html>
