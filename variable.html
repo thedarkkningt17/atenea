@@ -380,7 +380,7 @@ function getVal(row, name){
    ========================================================= */
 async function cargarDatos(){
   try{
-    const res = await fetch('data/remuneracion.csv', {cache:'no-store'});
+    const res = await fetch('remuneracion.csv', {cache:'no-store'});
     if(!res.ok) throw new Error('No se encontró data/remuneracion.csv');
     const txt = await res.text();
     datosVariable = parseCSV(txt);
