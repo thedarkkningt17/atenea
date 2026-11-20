@@ -491,6 +491,9 @@ function render(){
   const pctClass = pctAsj > 0 ? 'ok' : 'warn';
   const totalClass = totalVar > 0 ? 'highlight' : 'zero';
 
+    // Enmascarar el DNI (mostrar solo los últimos 3 dígitos)
+  const dniStr = String(dni);
+  const dniEnmascarado = dniStr.length > 3 ? '*'.repeat(dniStr.length - 3) + dniStr.slice(-3) : dniStr;
   const tr = document.createElement('tr');
   tr.innerHTML = `
     <td>${dni}</td>
