@@ -351,12 +351,19 @@ function parseCSV(text){
 }
 
 function num(v){
-  if(v==null||v==='') return 0;
+  if(v==null || v==='') return 0;
   let s=String(v).trim();
-  // si viene como "481250" -> 481250 ; si viene "0,0370" -> 0.0370
-  if(s.includes(',') && s.includes('.')) s = s.replace(/\./g,'').replace(',','.');
-  else if(s.includes(',')) s = s.replace(',','.');
-  return parseFloat(s)||0;
+  // 1. Quitar símbolos de moneda y espacios
+  s = s.replace(/[$\s]/g, '');
+  // 2. Si tiene punto y coma (ej: 280.002,00), quitamos los puntos y cambiamos la coma por punto
+  if(s.includes(',') && s.includes('.')) {
+    s = s.replace(/\./g,'').replace(',','.');
+  } 
+  // 3. Si solo tiene coma (ej: 0,037), la cambiamos por punto
+  else if(s.includes(',')) {
+    s = s.replace(',','.');
+  }
+  return parseFloat(s) || 0;
 }
 
 function fmtMoneda(v){
