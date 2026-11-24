@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Disponibilidad Festivos 2026-2027</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+    body{
+        font-family: Arial, sans-serif;
+        background:#f4f6f9;
+        margin:20px;
+    }
+
+    .container{
+        max-width:1400px;
+        margin:auto;
+        background:white;
+        padding:20px;
+        border-radius:10px;
+        box-shadow:0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    h1{
+        text-align:center;
+        color:#003366;
+    }
+
+    table{
+        width:100%;
+        border-collapse:collapse;
+        margin-top:20px;
+    }
+
+    th{
+        background:#003366;
+        color:white;
+        padding:12px;
+    }
+
+    td{
+        border:1px solid #ddd;
+        padding:10px;
+        text-align:center;
+    }
+
+    tr:nth-child(even){
+        background:#f8f8f8;
+    }
+
+    .agent-name{
+        text-align:left;
+        font-weight:bold;
+    }
+
+    select{
+        padding:5px;
+        width:90px;
+    }
+
+    .btn{
+        margin-top:20px;
+        padding:12px 25px;
+        background:#0078D4;
+        color:white;
+        border:none;
+        border-radius:5px;
+        font-size:16px;
+        cursor:pointer;
+    }
+
+    .btn:hover{
+        background:#005ea6;
+    }
+
+    .summary{
+        margin-top:25px;
+        background:#eef6ff;
+        padding:15px;
+        border-radius:8px;
+    }
+
+    .summary h3{
+        margin-top:0;
+    }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>Disponibilidad Festivos 2026 - 2027</h1>
+
+<table id="tablaAgentes">
+    <thead>
+        <tr>
+            <th>Agente</th>
+            <th>08/12/2026</th>
+            <th>25/12/2026</th>
+            <th>01/01/2027</th>
+        </tr>
+    </thead>
+
+    <tbody id="tbodyAgentes"></tbody>
+</table>
+
+<button class="btn" onclick="descargarExcel()">
+    📥 Descargar Excel
+</button>
+
+<div class="summary">
+    <h3>Resumen de Disponibilidad</h3>
+
+    <p>
+        08/12/2026:
+        <strong id="count1">0</strong>
+        disponibles
+    </p>
+
+    <p>
+        25/12/2026:
+        <strong id="count2">0</strong>
+        disponibles
+    </p>
+
+    <p>
+        01/01/2027:
+        <strong id="count3">0</strong>
+        disponibles
+    </p>
+</div>
+
+</div>
+
+<script>
+
+const agentes = [
+"STEFANI MEDINA HERRERA",
+"CAMILO ANDRES URIBE PEREZ",
+"ELKIN YESID FUENTES CARREÑO",
+"FAVER JULIAN RUEDA BARRIENTOS",
+"NAIN GABRIEL CABARCAS VASQUEZ",
+"KAREN DAIANA GUALDRON JAIMEZ",
+"MAICOL ESNEIDER BERNAL PEÑA",
+"FREYDEN STEVEN GALVIS CHIA",
+"JUAN JOSE GUTIERREZ BLANCO",
+"YEIMARY ZANDRITH GUTIÉRREZ MANTILLA",
+"JEISON FERNANDO ARDILA GOMEZ",
+"JORGE LUIS LOPEZ LANDERO",
+"ALEJANDRA ÁNGELES JAIMES",
+"JHON EYMAR PORTILLA ACELAS",
+"ALEJANDRA PEDROZO RICO"
+];
+
+const tbody = document.getElementById("tbodyAgentes");
+
+agentes.forEach(nombre => {
+
+    const fila = document.createElement("tr");
+
+    fila.innerHTML = `
+        <td class="agent-name">${nombre}</td>
+
+        <td>
+            <select onchange="actualizarResumen()">
+                <option value="">Seleccionar</option>
+                <option>Sí</option>
+                <option>No</option>
+            </select>
+        </td>
+
+        <td>
+            <select onchange="actualizarResumen()">
+                <option value="">Seleccionar</option>
+                <option>Sí</option>
+                <option>No</option>
+            </select>
+        </td>
+
+        <td>
+            <select onchange="actualizarResumen()">
+                <option value="">Seleccionar</option>
+                <option>Sí</option>
+                <option>No</option>
+            </select>
+        </td>
+    `;
+
+    tbody.appendChild(fila);
+
+});
+
+function actualizarResumen(){
+
+    let d1 = 0;
+    let d2 = 0;
+    let d3 = 0;
+
+    document.querySelectorAll("#tablaAgentes tbody tr")
+    .forEach(fila => {
+
+        const selects = fila.querySelectorAll("select");
+
+        if(selects[0].value === "Sí") d1++;
+        if(selects[1].value === "Sí") d2++;
+        if(selects[2].value === "Sí") d3++;
+
+    });
+
+    document.getElementById("count1").textContent = d1;
+    document.getElementById("count2").textContent = d2;
+    document.getElementById("count3").textContent = d3;
+}
+
+function descargarExcel(){
+
+    let datos = [];
+
+    datos.push([
+        "Agente",
+        "08/12/2026",
+        "25/12/2026",
+        "01/01/2027"
+    ]);
+
+    document.querySelectorAll("#tablaAgentes tbody tr")
+    .forEach(fila => {
+
+        const celdas = fila.querySelectorAll("td");
+        const selects = fila.querySelectorAll("select");
+
+        datos.push([
+            celdas[0].innerText,
+            selects[0].value,
+            selects[1].value,
+            selects[2].value
+        ]);
+
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(datos);
+    const wb = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+        wb,
+        ws,
+        "Disponibilidad"
+    );
+
+    XLSX.writeFile(
+        wb,
+        "Disponibilidad_Festivos_2026_2027.xlsx"
+    );
+}
+
+</script>
+
+</body>
+</html>
